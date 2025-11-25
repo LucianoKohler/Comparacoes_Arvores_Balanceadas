@@ -233,7 +233,7 @@ void deleteAllAVL(NodeAVL *root) {
 //      int a[N];
 //      for(int i = 0; i < N; i++)
 //           a[i] = rand() % 2000000000;
-//      NodeAVL *root = createAVL(a[0]);
+//      NodeAVL *root = createAVL(a[0]);    
 //      for(int i = 1; i < N; i++)
 //           root = insertAVL(root, a[i]);
 //      inOrder(root);

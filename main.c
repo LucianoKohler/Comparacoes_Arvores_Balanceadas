@@ -27,7 +27,7 @@ int iterAtual = 0;
 
 void printarCabecalho(){
     printf("|--------|----------|----------|----------|----------|----------|\n");
-    printf("|qtd. Elem|    AVL   | B ord. 1 | B ord. 5 | B ord. 10|RubroNegra|\n");
+    printf("|qtd.Elem|    AVL   | B ord. 1 | B ord. 5 | B ord. 10|RubroNegra|\n");
     printf("|--------|----------|----------|----------|----------|----------|\n");
 }
 
@@ -45,10 +45,9 @@ int main(){
         
         int conjValoresAleatorios[tamConjunto];
         for(int i = 0; i < tamConjunto; i++){
-            int sinal = rand() % 2;
-            ll num = rand() % LLONG_MAX;
-            conjValoresAleatorios[i] = (sinal == 0 ? rand() : -rand());
-            conjValoresAleatorios[i] = rand() % LLONG_MAX; // Valor entre -LLONG_MAX e LLONG_MAX
+            int sinal = (rand()&1) ? -1 : 1;
+            ll num = rand() % 2000000000 * sinal; // Valor entre -2000000000 e 2000000000
+            conjValoresAleatorios[i] = num;
         }
 
         // 1: Árvore AVL
@@ -56,8 +55,8 @@ int main(){
         for(int i = 0; i < tamConjunto; i++){
             raizAVL = insertAVL(raizAVL, conjValoresAleatorios[i]);
         }
-
         deleteAllAVL(raizAVL);
+
         // 2: Árvore B de ordem 1
         // 3: Árvore B de ordem 5
         // 4: Árvore B de ordem 10
