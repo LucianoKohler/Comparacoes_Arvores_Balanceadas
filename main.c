@@ -9,8 +9,9 @@
 */
 
 
+#include "header.h"
 // Inclusão das estruturas
-// #include "estruturas/AVL.c"
+#include "estruturas/AVL.c"
 // #include "estruturas/rubroNegra.c"
 // #include "estruturas/B1.c"
 // #include "estruturas/B5.c"
@@ -20,18 +21,9 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define ll long long
-
-typedef struct salvamentoDoConjuntoI{
-    ll iterAVL;
-    ll iterB1;
-    ll iterB5;
-    ll iterB10;
-    ll iterRubroNegra;
-} salvamentoDoConjuntoI;
-
-salvamentoDoConjuntoI testes[10];
+estatisticasConjunto testes[10];
 int tamanhoConjuntos[10] = {1, 10, 50, 100, 1000, 2000, 3000, 4000, 5000, 10000 };
+int iterAtual = 0;
 
 void printarCabecalho(){
     printf("|--------|----------|----------|----------|----------|----------|\n");
@@ -42,29 +34,42 @@ void printarCabecalho(){
 int main(){
     srand(time(NULL));
     printarCabecalho();
-    for(int i = 0; i < 10; i++){
+    for(iterAtual = 0; iterAtual < 10; iterAtual++){
         // Setup
-        int tamConjunto = tamanhoConjuntos[i];
-        testes[i].iterAVL = 0;
-        testes[i].iterB1 = 0;
-        testes[i].iterB5 = 0;
-        testes[i].iterB10 = 0;
-        testes[i].iterRubroNegra = 0;
+        int tamConjunto = tamanhoConjuntos[iterAtual];
+        testes[iterAtual].iterAVL = 0;
+        testes[iterAtual].iterB1 = 0;
+        testes[iterAtual].iterB5 = 0;
+        testes[iterAtual].iterB10 = 0;
+        testes[iterAtual].iterRubroNegra = 0;
         
         int conjValoresAleatorios[tamConjunto];
         for(int i = 0; i < tamConjunto; i++){
-            conjValoresAleatorios[i] = rand() % INT_MAX; // Valor entre 0 e INT_MAX
+            int sinal = rand() % 2;
+            ll num = rand() % LLONG_MAX;
+            conjValoresAleatorios[i] = (sinal == 0 ? rand() : -rand());
+            conjValoresAleatorios[i] = rand() % LLONG_MAX; // Valor entre -LLONG_MAX e LLONG_MAX
         }
 
-        // Por fim, conjValoresAleatorios tem n valores variando de 0 a INT_MAX
-        
         // 1: Árvore AVL
+        NodeAVL * raizAVL = NULL;
+        for(int i = 0; i < tamConjunto; i++){
+            raizAVL = insertAVL(raizAVL, conjValoresAleatorios[i]);
+        }
+
+        deleteAllAVL(raizAVL);
         // 2: Árvore B de ordem 1
         // 3: Árvore B de ordem 5
         // 4: Árvore B de ordem 10
         // 5: Árvore Rubro-Negra
 
-        printf("|%8d|%10d|%10d|%10d|%10d|%10d|\n", tamConjunto, testes[i].iterAVL, testes[i].iterB1, testes[i].iterB5, testes[i].iterB10, testes[i].iterRubroNegra);
+        printf("|%8d|%10d|%10d|%10d|%10d|%10d|\n", 
+            tamConjunto,
+            testes[iterAtual].iterAVL,
+            testes[iterAtual].iterB1,
+            testes[iterAtual].iterB5,
+            testes[iterAtual].iterB10,
+            testes[iterAtual].iterRubroNegra);
         printf("|--------|----------|----------|----------|----------|----------|\n");
     }
 
