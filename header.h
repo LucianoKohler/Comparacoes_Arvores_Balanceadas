@@ -2,6 +2,8 @@
 #define STRUCTS_H
 
 
+#define MAXB1 1
+#define MINB1 0
 #define ll long long
 
 typedef struct estatisticasConjunto{
@@ -19,5 +21,11 @@ typedef struct nodeAVL{
     struct nodeAVL *right;
     int ht;
 }NodeAVL;
+
+typedef struct B1Node {
+  int item[MAXB1 + 1], count;
+  struct B1Node *linker[MAXB1 + 1];
+}B1Node;
+B1Node *raizB1;
 
 #endif

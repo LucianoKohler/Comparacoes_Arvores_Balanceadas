@@ -216,7 +216,7 @@ void inOrder(NodeAVL *root) {
         return;
     }
     inOrder(root->left);
-    printf("%d ", root->data);
+    printf("%lld ", root->data);
     inOrder(root->right);
 }
 

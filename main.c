@@ -13,7 +13,7 @@
 // Inclusão das estruturas
 #include "estruturas/AVL.c"
 // #include "estruturas/rubroNegra.c"
-// #include "estruturas/B1.c"
+ #include "estruturas/B1.c"
 // #include "estruturas/B5.c"
 // #include "estruturas/B10.c"
 
@@ -43,7 +43,7 @@ int main(){
         testes[iterAtual].iterB10 = 0;
         testes[iterAtual].iterRubroNegra = 0;
         
-        int conjValoresAleatorios[tamConjunto];
+        ll conjValoresAleatorios[tamConjunto];
         for(int i = 0; i < tamConjunto; i++){
             int sinal = (rand()&1) ? -1 : 1;
             ll num = rand() % 2000000000 * sinal; // Valor entre -2000000000 e 2000000000
@@ -58,11 +58,17 @@ int main(){
         deleteAllAVL(raizAVL);
 
         // 2: Árvore B de ordem 1
+        raizB1 = NULL;
+        for(int i = 0; i < tamConjunto; i++){
+            insertB1(conjValoresAleatorios[i]);
+        }
+        deleteAllB1(raizB1);
+
         // 3: Árvore B de ordem 5
         // 4: Árvore B de ordem 10
         // 5: Árvore Rubro-Negra
 
-        printf("|%8d|%10d|%10d|%10d|%10d|%10d|\n", 
+        printf("|%8d|%10lld|%10lld|%10lld|%10lld|%10lld|\n", 
             tamConjunto,
             testes[iterAtual].iterAVL,
             testes[iterAtual].iterB1,
