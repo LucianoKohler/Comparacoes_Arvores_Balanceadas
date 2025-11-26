@@ -55,7 +55,7 @@ int localizaChave(ArvoreB* arvore, int chave) {
     No *no = arvore->raiz;
 
     while (no != NULL) {
-        testes[iterAtual].iterB10++;
+        
 
         int i = pesquisaBinaria(no, chave);
         if (i < no->total && no->chaves[i] == chave) {
@@ -72,6 +72,14 @@ No* localizaNo(ArvoreB* arvore, int chave) {
 
     while (no != NULL) {
         int i = pesquisaBinaria(no, chave);
+
+        if(arvore->ordem == 1){
+            testes[iterAtual].iterB1++;
+        }else if(arvore->ordem == 5){
+            testes[iterAtual].iterB5++;
+        }else if(arvore->ordem == 10){
+            testes[iterAtual].iterB10++;
+        }
         if (no->filhos[i] == NULL)
             return no; // encontrou nó folha onde inserir
         else
@@ -115,8 +123,6 @@ No* divideNo(ArvoreB* arvore, No* no) {
 }
 
 void adicionaChaveRecursivo(ArvoreB* arvore, No* no, No* novo, int chave) {
-    testes[iterAtual].iterB10++;
-
     adicionaChaveNo(no, novo, chave);
     if (transbordo(arvore, no)) {
         int promovido = no->chaves[arvore->ordem];

@@ -15,7 +15,7 @@
 #include "estruturas/RB.c"
 // #include "estruturas/B1.c"
 // #include "estruturas/B5.c"
-#include "estruturas/B10.c"
+#include "estruturas/B.c"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -58,8 +58,16 @@ int main(){
         deleteAllAVL(raizAVL);
 
         // 2: Árvore B de ordem 1
+        ArvoreB* arv1 = criaArvore(1);
+        for(int i = 0; i < tamConjunto; i++){
+            adicionaChave(arv1, conjValoresAleatorios[i]);
+        }
 
         // 3: Árvore B de ordem 5
+        ArvoreB* arv5 = criaArvore(5);
+        for(int i = 0; i < tamConjunto; i++){
+            adicionaChave(arv5, conjValoresAleatorios[i]);
+        }
 
         // 4: Árvore B de ordem 10
         ArvoreB* arv10 = criaArvore(10);
