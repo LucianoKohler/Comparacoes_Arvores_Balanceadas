@@ -71,16 +71,28 @@ int main(){
             adicionaChave(arv1, conjValoresAleatorios[i]);
         }
 
+        for(int i = 0; i < tamConjunto; i++){
+            removeB(arv1, conjValoresAleatorios[i]);
+        }
+
         // 3: Árvore B de ordem 5
         ArvoreB* arv5 = criaArvore(5);
         for(int i = 0; i < tamConjunto; i++){
             adicionaChave(arv5, conjValoresAleatorios[i]);
         }
 
+        for(int i = 0; i < tamConjunto; i++){
+            removeB(arv5, conjValoresAleatorios[i]);
+        }
+
         // 4: Árvore B de ordem 10
         ArvoreB* arv10 = criaArvore(10);
         for(int i = 0; i < tamConjunto; i++){
             adicionaChave(arv10, conjValoresAleatorios[i]);
+        }
+    
+        for(int i = 0; i < tamConjunto; i++){
+            removeB(arv10, conjValoresAleatorios[i]);
         }
 
         // 5: Árvore Rubro-Negra

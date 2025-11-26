@@ -160,6 +160,215 @@ void printTree(No* root, int level) {
     }
 }
 
+void removeChaveDoNo(No* no, int idx) {
+    for (int i = idx; i < no->total - 1; i++) {
+        no->chaves[i] = no->chaves[i + 1];
+        no->filhos[i + 1] = no->filhos[i + 2];
+    }
+    no->total--;
+}
+
+int buscaChave(No* no, int chave) {
+    int i = 0;
+    while (i < no->total && chave > no->chaves[i]) i++;
+    return i;
+}
+
+No* maiorFilho(No* no) {
+    No* atual = no;
+    while (atual->filhos[atual->total] != NULL)
+        atual = atual->filhos[atual->total];
+    return atual;
+}
+
+No* menorFilho(No* no) {
+    No* atual = no;
+    while (atual->filhos[0] != NULL)
+        atual = atual->filhos[0];
+    return atual;
+}
+
+void mergeNos(ArvoreB* arv, No* no, int idx) {
+    No* esq = no->filhos[idx];
+    No* dir = no->filhos[idx + 1];
+
+    // puxa chave do pai
+    esq->chaves[esq->total] = no->chaves[idx];
+    esq->total++;
+
+    // copia chaves e filhos do dir
+    for (int i = 0; i < dir->total; i++) {
+        esq->chaves[esq->total] = dir->chaves[i];
+        esq->filhos[esq->total] = dir->filhos[i];
+        if (esq->filhos[esq->total]) esq->filhos[esq->total]->pai = esq;
+        esq->total++;
+    }
+    esq->filhos[esq->total] = dir->filhos[dir->total];
+
+    removeChaveDoNo(no, idx);
+
+    free(dir);
+}
+
+void balanceiaRemocao(ArvoreB* arv, No* no, int idx) {
+    int t = arv->ordem;
+
+    No* filho = no->filhos[idx];
+
+    // Caso 1 — "pegar emprestado" do irmão esquerdo
+    if (idx > 0 && no->filhos[idx - 1]->total > t) {
+        No* irmao = no->filhos[idx - 1];
+
+        // empurra tudo do filho para a direita
+        for (int i = filho->total; i > 0; i--) {
+            filho->chaves[i] = filho->chaves[i - 1];
+            filho->filhos[i + 1] = filho->filhos[i];
+        }
+        filho->filhos[1] = filho->filhos[0];
+
+        // chave do pai desce
+        filho->chaves[0] = no->chaves[idx - 1];
+
+        // puxa chave do irmão
+        no->chaves[idx - 1] = irmao->chaves[irmao->total - 1];
+
+        filho->filhos[0] = irmao->filhos[irmao->total];
+        if (filho->filhos[0]) filho->filhos[0]->pai = filho;
+
+        filho->total++;
+        irmao->total--;
+        return;
+    }
+
+    // Caso 2 — emprestar do irmão direito
+    if (idx < no->total && no->filhos[idx + 1]->total > t) {
+        No* irmao = no->filhos[idx + 1];
+
+        // chave do pai desce
+        filho->chaves[filho->total] = no->chaves[idx];
+        filho->filhos[filho->total + 1] = irmao->filhos[0];
+
+        if (filho->filhos[filho->total + 1])
+            filho->filhos[filho->total + 1]->pai = filho;
+
+        filho->total++;
+
+        // irmão sobe chave
+        no->chaves[idx] = irmao->chaves[0];
+
+        // shift
+        for (int i = 0; i < irmao->total - 1; i++) {
+            irmao->chaves[i] = irmao->chaves[i + 1];
+            irmao->filhos[i] = irmao->filhos[i + 1];
+        }
+        irmao->filhos[irmao->total - 1] = irmao->filhos[irmao->total];
+
+        irmao->total--;
+        return;
+    }
+
+    // Caso 3 — Merge inevitável
+    if (idx < no->total){
+        if(arv->ordem == 1){
+            testes[iterAtual].iterRemovB1++;
+        }else if(arv->ordem == 5){
+            testes[iterAtual].iterRemovB5++;
+        }else if(arv->ordem == 10){
+            testes[iterAtual].iterRemovB10++;
+        }
+        mergeNos(arv, no, idx);
+    }
+    else{
+        if(arv->ordem == 1){
+            testes[iterAtual].iterRemovB1++;
+        }else if(arv->ordem == 5){
+            testes[iterAtual].iterRemovB5++;
+        }else if(arv->ordem == 10){
+            testes[iterAtual].iterRemovB10++;
+        }
+        mergeNos(arv, no, idx - 1);
+    }
+}
+
+void removeRec(ArvoreB* arv, No* no, int chave) {
+    if(arv->ordem == 1){
+        testes[iterAtual].iterRemovB1++;
+    }else if(arv->ordem == 5){
+        testes[iterAtual].iterRemovB5++;
+    }else if(arv->ordem == 10){
+        testes[iterAtual].iterRemovB10++;
+    }
+
+    int idx = buscaChave(no, chave);
+
+    // Caso A — chave está neste nó
+    if (idx < no->total && no->chaves[idx] == chave) {
+
+        // A1 — Nó folha
+        if (no->filhos[0] == NULL) {
+            if(arv->ordem == 1){
+                testes[iterAtual].iterRemovB1++;
+            }else if(arv->ordem == 5){
+                testes[iterAtual].iterRemovB5++;
+            }else if(arv->ordem == 10){
+                testes[iterAtual].iterRemovB10++;
+            }
+            removeChaveDoNo(no, idx);
+            return;
+        }   
+
+        // A2 — Nó interno: usar antecessor
+        No* pred = maiorFilho(no->filhos[idx]);
+        if(arv->ordem == 1){
+            testes[iterAtual].iterRemovB1++;
+        }else if(arv->ordem == 5){
+            testes[iterAtual].iterRemovB5++;
+        }else if(arv->ordem == 10){
+            testes[iterAtual].iterRemovB10++;
+        }
+
+        int k = pred->chaves[pred->total - 1];
+        no->chaves[idx] = k;
+        removeRec(arv, pred, k);
+    }
+
+    // Caso B — chave está abaixo
+    else {
+        if (no->filhos[idx] == NULL)
+            return;
+
+        // Se filho tem mínimo, balancear antes de descer
+        if (no->filhos[idx]->total == arv->ordem)
+            balanceiaRemocao(arv, no, idx);
+
+        removeRec(arv, no->filhos[buscaChave(no, chave)], chave);
+    }
+}
+
+void removeB(ArvoreB* arv, int chave) {
+    if (!arv->raiz) return;
+
+    if(arv->ordem == 1){
+        testes[iterAtual].iterRemovB1++;
+    }else if(arv->ordem == 5){
+        testes[iterAtual].iterRemovB5++;
+    }else if(arv->ordem == 10){
+        testes[iterAtual].iterRemovB10++;
+    }
+
+
+    removeRec(arv, arv->raiz, chave);
+
+    // Se a raiz ficou vazia, substitui pelo único filho
+    if (arv->raiz->total == 0 && arv->raiz->filhos[0] != NULL) {
+        No* old = arv->raiz;
+        arv->raiz = arv->raiz->filhos[0];
+        arv->raiz->pai = NULL;
+        free(old);
+    }
+}
+
+
 // int main(){
 //     ArvoreB* arv = criaArvore(1);
 //     adicionaChave(arv, 20);
