@@ -13,8 +13,8 @@
 // Inclusão das estruturas
 #include "estruturas/AVL.c"
 #include "estruturas/RB.c"
-#include "estruturas/B1.c"
-#include "estruturas/B5.c"
+// #include "estruturas/B1.c"
+// #include "estruturas/B5.c"
 #include "estruturas/B10.c"
 
 #include <stdio.h>
@@ -58,27 +58,14 @@ int main(){
         deleteAllAVL(raizAVL);
 
         // 2: Árvore B de ordem 1
-        raizB1 = NULL;
-        for(int i = 0; i < tamConjunto; i++){
-            insertB1(conjValoresAleatorios[i]);
-        }
-        deleteAllB1(raizB1);
 
         // 3: Árvore B de ordem 5
-        raizB5 = NULL;
-        for(int i = 0; i < tamConjunto; i++){
-            insertB5(conjValoresAleatorios[i]);
-        }
-        deleteAllB5(raizB5);
 
         // 4: Árvore B de ordem 10
-        raizB10 = NULL;
+        ArvoreB* arv10 = criaArvore(10);
         for(int i = 0; i < tamConjunto; i++){
-            long before = testes[iterAtual].iterB10;            
-            insertB10(conjValoresAleatorios[i]);
-            printf("ins %d -> %ld\n", conjValoresAleatorios[i], testes[iterAtual].iterB10 - before);
+            adicionaChave(arv10, conjValoresAleatorios[i]);
         }
-        deleteAllB10(raizB10);
 
         // 5: Árvore Rubro-Negra
         raizRB = NULL;
