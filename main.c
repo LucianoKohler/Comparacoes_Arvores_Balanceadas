@@ -90,7 +90,7 @@ int main(){
         }
 
         for(int i = 0; i < tamConjunto; i++){
-            deletionRB(conjValoresAleatorios[i]);
+            remover(&raizRB, conjValoresAleatorios[i]);
         }
 
         printf("|%8d|%10lld|%10lld|%10lld|%10lld|%10lld|   |%8d|%10lld|%10lld|%10lld|%10lld|%10lld|\n", 
