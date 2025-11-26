@@ -74,7 +74,9 @@ int main(){
         // 4: Árvore B de ordem 10
         raizB10 = NULL;
         for(int i = 0; i < tamConjunto; i++){
+            long before = testes[iterAtual].iterB10;            
             insertB10(conjValoresAleatorios[i]);
+            printf("ins %d -> %ld\n", conjValoresAleatorios[i], testes[iterAtual].iterB10 - before);
         }
         deleteAllB10(raizB10);
 

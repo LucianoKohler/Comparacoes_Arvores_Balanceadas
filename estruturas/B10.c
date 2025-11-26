@@ -22,7 +22,7 @@ struct B10Node *createNodeB10(int item, struct B10Node *child) {
 void addValToNodeB10(int item, int pos, struct B10Node *node, struct B10Node *child) {
     int j = node->count;
     while (j > pos) {
-        testes[iterAtual].iterB10++;
+
         node->item[j + 1] = node->item[j];
         node->linker[j + 1] = node->linker[j];
         j--;
@@ -44,7 +44,7 @@ void splitNodeB10(int item, int *pval, int pos, struct B10Node *node, struct B10
     *newNode = (struct B10Node *)malloc(sizeof(struct B10Node));
     j = median + 1;
     while (j <= MAXB10) {
-        testes[iterAtual].iterB10++;
+
         (*newNode)->item[j - median] = node->item[j];
         (*newNode)->linker[j - median] = node->linker[j];
         j++;
@@ -64,23 +64,33 @@ void splitNodeB10(int item, int *pval, int pos, struct B10Node *node, struct B10
 
 // Set the value in the node
 int setValueInNodeB10(int item, int *pval, struct B10Node *node, struct B10Node **child) {
-    testes[iterAtual].iterB10++;
     int pos;
+
     if (!node) {
         *pval = item;
         *child = NULL;
         return 1;
     }
 
+    // Conta UMA vez por nó visitado (decisão inicial dentro do nó)
+    testes[iterAtual].iterB10++;
+
+    // escolhe posição inicial
     if (item < node->item[1]) {
         pos = 0;
     } else {
-        for (pos = node->count; (item < node->item[pos] && pos > 1); pos--);
+        // procura da posição correta dentro do nó:
+        // cada iteração aqui representa UMA comparação adicional
+        for (pos = node->count; pos > 1 && item < node->item[pos]; pos--) {
+            testes[iterAtual].iterB10++;  // conta a comparação node->item[pos]
+        }
         if (item == node->item[pos]) {
             printf("Duplicates not allowed\n");
             return 0;
         }
     }
+
+    // NÃO contar aqui outra vez — a descida será contabilizada
     if (setValueInNodeB10(item, pval, node->linker[pos], child)) {
         if (node->count < MAXB10) {
             addValToNodeB10(*pval, pos, node, *child);
@@ -91,6 +101,7 @@ int setValueInNodeB10(int item, int *pval, struct B10Node *node, struct B10Node 
     }
     return 0;
 }
+
 
 // Insertion operation
 void insertB10(int item) {
@@ -132,6 +143,7 @@ void rightShiftB10(struct B10Node *myNode, int pos) {
         x->item[j + 1] = x->item[j];
         x->linker[j + 1] = x->linker[j];
     }
+    
     x->item[1] = myNode->item[pos];
     x->linker[1] = x->linker[0];
     x->count++;

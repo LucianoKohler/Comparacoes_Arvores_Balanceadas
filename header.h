@@ -2,14 +2,14 @@
 #define STRUCTS_H
 
 
-#define MAXB1 1
-#define MINB1 0
+#define MAXB1 2
+#define MINB1 1
 
-#define MAXB5 5
-#define MINB5 4
+#define MAXB5 10
+#define MINB5 5
 
-#define MAXB10 10
-#define MINB10 9
+#define MAXB10 20
+#define MINB10 10
 #define ll long long
 
 typedef struct estatisticasConjunto{
