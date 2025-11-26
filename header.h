@@ -3,11 +3,16 @@
 #define ll long long
 
 typedef struct estatisticasConjunto{
-    ll iterAVL;
-    ll iterB1;
-    ll iterB5;
-    ll iterB10;
-    ll iterRB;
+    ll iterAddAVL;
+    ll iterAddB1;
+    ll iterAddB5;
+    ll iterAddB10;
+    ll iterAddRB;
+    ll iterRemovAVL;
+    ll iterRemovB1;
+    ll iterRemovB5;
+    ll iterRemovB10;
+    ll iterRemovRB;
 } estatisticasConjunto;
 
 // structure of the tree node

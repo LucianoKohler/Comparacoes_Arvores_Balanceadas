@@ -30,7 +30,7 @@ void insertRB(int data) {
   stack[ht] = raizRB;
   dir[ht++] = 0;
   while (ptr != NULL) {
-    testes[iterAtual].iterRB++;
+    testes[iterAtual].iterAddRB++;
     if (ptr->data == data) {
       printf("Duplicates Not Allowed!!\n");
       return;
@@ -117,6 +117,7 @@ void deletionRB(int data) {
 
   ptr = raizRB;
   while (ptr != NULL) {
+    testes[iterAtual].iterRemovRB++;
     if ((data - ptr->data) == 0)
       break;
     diff = (data - ptr->data) > 0 ? 1 : 0;

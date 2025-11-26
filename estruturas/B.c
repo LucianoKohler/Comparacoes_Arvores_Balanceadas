@@ -74,11 +74,11 @@ No* localizaNo(ArvoreB* arvore, int chave) {
         int i = pesquisaBinaria(no, chave);
 
         if(arvore->ordem == 1){
-            testes[iterAtual].iterB1++;
+            testes[iterAtual].iterAddB1++;
         }else if(arvore->ordem == 5){
-            testes[iterAtual].iterB5++;
+            testes[iterAtual].iterAddB5++;
         }else if(arvore->ordem == 10){
-            testes[iterAtual].iterB10++;
+            testes[iterAtual].iterAddB10++;
         }
         if (no->filhos[i] == NULL)
             return no; // encontrou nó folha onde inserir
@@ -116,6 +116,7 @@ No* divideNo(ArvoreB* arvore, No* no) {
         if (novo->filhos[novo->total] != NULL) novo->filhos[novo->total]->pai = novo;
         novo->total++;
     }
+    
     novo->filhos[novo->total] = no->filhos[no->total];
     if (novo->filhos[novo->total] != NULL) novo->filhos[novo->total]->pai = novo;
     no->total = meio;

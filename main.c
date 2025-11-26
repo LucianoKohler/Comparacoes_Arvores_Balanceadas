@@ -26,9 +26,9 @@ int tamanhoConjuntos[10] = {1, 10, 50, 100, 1000, 2000, 3000, 4000, 5000, 10000 
 int iterAtual = 0;
 
 void printarCabecalho(){
-    printf("|--------|----------|----------|----------|----------|----------|\n");
-    printf("|qtd.Elem|    AVL   | B ord. 1 | B ord. 5 | B ord. 10|RubroNegra|\n");
-    printf("|--------|----------|----------|----------|----------|----------|\n");
+    printf("|--------|----------|----------|----------|----------|----------|   |--------|----------|----------|----------|----------|----------|\n");
+    printf("|qtd.Elem|    AVL   | B ord. 1 | B ord. 5 | B ord. 10|RubroNegra|   |qtd.Elem|    AVL   | B ord. 1 | B ord. 5 | B ord. 10|RubroNegra|\n");
+    printf("|--------|----------|----------|----------|----------|----------|   |--------|----------|----------|----------|----------|----------|\n");
 }
 
 int main(){
@@ -37,11 +37,16 @@ int main(){
     for(iterAtual = 0; iterAtual < 10; iterAtual++){
         // Setup
         int tamConjunto = tamanhoConjuntos[iterAtual];
-        testes[iterAtual].iterAVL = 0;
-        testes[iterAtual].iterB1 = 0;
-        testes[iterAtual].iterB5 = 0;
-        testes[iterAtual].iterB10 = 0;
-        testes[iterAtual].iterRB = 0;
+        testes[iterAtual].iterAddAVL = 0;
+        testes[iterAtual].iterAddB1 = 0;
+        testes[iterAtual].iterAddB5 = 0;
+        testes[iterAtual].iterAddB10 = 0;
+        testes[iterAtual].iterAddRB = 0;
+        testes[iterAtual].iterRemovAVL = 0;
+        testes[iterAtual].iterRemovB1 = 0;
+        testes[iterAtual].iterRemovB5 = 0;
+        testes[iterAtual].iterRemovB10 = 0;
+        testes[iterAtual].iterRemovRB = 0;
         
         ll conjValoresAleatorios[tamConjunto];
         for(int i = 0; i < tamConjunto; i++){
@@ -55,8 +60,11 @@ int main(){
         for(int i = 0; i < tamConjunto; i++){
             raizAVL = insertAVL(raizAVL, conjValoresAleatorios[i]);
         }
-        deleteAllAVL(raizAVL);
 
+        for(int i = 0; i < tamConjunto; i++){
+            raizAVL = deleteAVL(raizAVL, conjValoresAleatorios[i]);
+        }
+        
         // 2: Árvore B de ordem 1
         ArvoreB* arv1 = criaArvore(1);
         for(int i = 0; i < tamConjunto; i++){
@@ -80,16 +88,25 @@ int main(){
         for(int i = 0; i < tamConjunto; i++){
             insertRB(conjValoresAleatorios[i]);
         }
-        // deleteAllRB(raizRB);
 
-        printf("|%8d|%10lld|%10lld|%10lld|%10lld|%10lld|\n", 
+        for(int i = 0; i < tamConjunto; i++){
+            deletionRB(conjValoresAleatorios[i]);
+        }
+
+        printf("|%8d|%10lld|%10lld|%10lld|%10lld|%10lld|   |%8d|%10lld|%10lld|%10lld|%10lld|%10lld|\n", 
             tamConjunto,
-            testes[iterAtual].iterAVL,
-            testes[iterAtual].iterB1,
-            testes[iterAtual].iterB5,
-            testes[iterAtual].iterB10,
-            testes[iterAtual].iterRB);
-        printf("|--------|----------|----------|----------|----------|----------|\n");
+            testes[iterAtual].iterAddAVL,
+            testes[iterAtual].iterAddB1,
+            testes[iterAtual].iterAddB5,
+            testes[iterAtual].iterAddB10,
+            testes[iterAtual].iterAddRB,
+            tamConjunto,
+            testes[iterAtual].iterRemovAVL,
+            testes[iterAtual].iterRemovB1,
+            testes[iterAtual].iterRemovB5,
+            testes[iterAtual].iterRemovB10,
+            testes[iterAtual].iterRemovRB);
+        printf("|--------|----------|----------|----------|----------|----------|   |--------|----------|----------|----------|----------|----------|\n");
     }
 
     return 0;

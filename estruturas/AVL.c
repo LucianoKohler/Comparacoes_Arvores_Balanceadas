@@ -111,7 +111,7 @@ int heightAVL(NodeAVL* root){
 NodeAVL* insertAVL(NodeAVL* root, int data){
     
     /*****/
-    testes[iterAtual].iterAVL++;
+    testes[iterAtual].iterAddAVL++;
     /*****/
 
     if (root == NULL){
@@ -156,6 +156,7 @@ NodeAVL* insertAVL(NodeAVL* root, int data){
 // deletes a node from the AVL tree
 
 NodeAVL* deleteAVL(NodeAVL *root, int x) {
+    testes[iterAtual].iterRemovAVL++;
     NodeAVL * temp = NULL;
     NodeAVL *dl = root;
 
