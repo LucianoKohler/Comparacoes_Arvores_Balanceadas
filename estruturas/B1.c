@@ -22,7 +22,6 @@ struct B1Node *createNodeB1(int item, struct B1Node *child) {
 void addValToNodeB1(int item, int pos, struct B1Node *node, struct B1Node *child) {
     int j = node->count;
     while (j > pos) {
-        testes[iterAtual].iterB1++;
         node->item[j + 1] = node->item[j];
         node->linker[j + 1] = node->linker[j];
         j--;
@@ -44,7 +43,6 @@ void splitNodeB1(int item, int *pval, int pos, struct B1Node *node, struct B1Nod
     *newNode = (struct B1Node *)malloc(sizeof(struct B1Node));
     j = median + 1;
     while (j <= MAXB1) {
-        testes[iterAtual].iterB1++;
         (*newNode)->item[j - median] = node->item[j];
         (*newNode)->linker[j - median] = node->linker[j];
         j++;
