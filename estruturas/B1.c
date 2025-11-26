@@ -3,13 +3,12 @@
 #include "../header.h"
 #include <stdio.h>
 #include <stdlib.h>
-#define ll long long
 
 extern estatisticasConjunto testes[10];
 extern int iterAtual;
 
 // Node creation
-struct B1Node *createNode(int item, struct B1Node *child) {
+struct B1Node *createNodeB1(int item, struct B1Node *child) {
     struct B1Node *newNode;
     newNode = (struct B1Node *)malloc(sizeof(struct B1Node));
     newNode->item[1] = item;
@@ -20,7 +19,7 @@ struct B1Node *createNode(int item, struct B1Node *child) {
 }
 
 // Add value to the node
-void addValToNode(int item, int pos, struct B1Node *node, struct B1Node *child) {
+void addValToNodeB1(int item, int pos, struct B1Node *node, struct B1Node *child) {
     int j = node->count;
     while (j > pos) {
         testes[iterAtual].iterB1++;
@@ -34,7 +33,7 @@ void addValToNode(int item, int pos, struct B1Node *node, struct B1Node *child) 
 }
 
 // Split the node
-void splitNode(int item, int *pval, int pos, struct B1Node *node, struct B1Node *child, struct B1Node **newNode) {
+void splitNodeB1(int item, int *pval, int pos, struct B1Node *node, struct B1Node *child, struct B1Node **newNode) {
     int median, j;
 
     if (pos > MINB1)
@@ -54,9 +53,9 @@ void splitNode(int item, int *pval, int pos, struct B1Node *node, struct B1Node 
     (*newNode)->count = MAXB1 - median;
 
     if (pos <= MINB1) {
-        addValToNode(item, pos, node, child);
+        addValToNodeB1(item, pos, node, child);
     } else {
-        addValToNode(item, pos - median, *newNode, child);
+        addValToNodeB1(item, pos - median, *newNode, child);
     }
     *pval = node->item[node->count];
     (*newNode)->linker[0] = node->linker[node->count];
@@ -64,7 +63,7 @@ void splitNode(int item, int *pval, int pos, struct B1Node *node, struct B1Node 
 }
 
 // Set the value in the node
-int setValueInNode(int item, int *pval, struct B1Node *node, struct B1Node **child) {
+int setValueInNodeB1(int item, int *pval, struct B1Node *node, struct B1Node **child) {
     testes[iterAtual].iterB1++;
     int pos;
     if (!node) {
@@ -82,11 +81,11 @@ int setValueInNode(int item, int *pval, struct B1Node *node, struct B1Node **chi
             return 0;
         }
     }
-    if (setValueInNode(item, pval, node->linker[pos], child)) {
+    if (setValueInNodeB1(item, pval, node->linker[pos], child)) {
         if (node->count < MAXB1) {
-            addValToNode(*pval, pos, node, *child);
+            addValToNodeB1(*pval, pos, node, *child);
         } else {
-            splitNode(*pval, pval, pos, node, *child, child);
+            splitNodeB1(*pval, pval, pos, node, *child, child);
             return 1;
         }
     }
@@ -98,13 +97,13 @@ void insertB1(int item) {
     int flag, i;
     struct B1Node *child;
 
-    flag = setValueInNode(item, &i, raizB1, &child);
+    flag = setValueInNodeB1(item, &i, raizB1, &child);
     if (flag)
-        raizB1 = createNode(i, child);
+        raizB1 = createNodeB1(i, child);
 }
 
 // Copy the successor
-void copySuccessor(struct B1Node *myNode, int pos) {
+void copySuccessorB1(struct B1Node *myNode, int pos) {
     struct B1Node *dummy;
     dummy = myNode->linker[pos];
 
@@ -114,7 +113,7 @@ void copySuccessor(struct B1Node *myNode, int pos) {
 }
 
 // Remove the value
-void removeVal(struct B1Node *myNode, int pos) {
+void removeValB1(struct B1Node *myNode, int pos) {
     int i = pos + 1;
     while (i <= myNode->count) {
         myNode->item[i - 1] = myNode->item[i];
@@ -125,7 +124,7 @@ void removeVal(struct B1Node *myNode, int pos) {
 }
 
 // Do right shift
-void rightShift(struct B1Node *myNode, int pos) {
+void rightShiftB1(struct B1Node *myNode, int pos) {
     struct B1Node *x = myNode->linker[pos];
     int j = x->count;
 
@@ -145,7 +144,7 @@ void rightShift(struct B1Node *myNode, int pos) {
 }
 
 // Do left shift
-void leftShift(struct B1Node *myNode, int pos) {
+void leftShiftB1(struct B1Node *myNode, int pos) {
     int j = 1;
     struct B1Node *x = myNode->linker[pos - 1];
 
@@ -167,7 +166,7 @@ void leftShift(struct B1Node *myNode, int pos) {
 }
 
 // Merge the nodes
-void mergeNodes(struct B1Node *myNode, int pos) {
+void mergeNodesB1(struct B1Node *myNode, int pos) {
     int j = 1;
     struct B1Node *x1 = myNode->linker[pos], *x2 = myNode->linker[pos - 1];
 
@@ -193,35 +192,35 @@ void mergeNodes(struct B1Node *myNode, int pos) {
 }
 
 // Adjust the node
-void adjustNode(struct B1Node *myNode, int pos) {
+void adjustNodeB1(struct B1Node *myNode, int pos) {
     if (!pos) {
         if (myNode->linker[1]->count > MINB1) {
-            leftShift(myNode, 1);
+            leftShiftB1(myNode, 1);
         } else {
-            mergeNodes(myNode, 1);
+            mergeNodesB1(myNode, 1);
         }
     } else {
         if (myNode->count != pos) {
             if (myNode->linker[pos - 1]->count > MINB1) {
-                rightShift(myNode, pos);
+                rightShiftB1(myNode, pos);
             } else {
                 if (myNode->linker[pos + 1]->count > MINB1) {
-                    leftShift(myNode, pos + 1);
+                    leftShiftB1(myNode, pos + 1);
                 } else {
-                    mergeNodes(myNode, pos);
+                    mergeNodesB1(myNode, pos);
                 }
             }
         } else {
             if (myNode->linker[pos - 1]->count > MINB1)
-                rightShift(myNode, pos);
+                rightShiftB1(myNode, pos);
             else
-                mergeNodes(myNode, pos);
+                mergeNodesB1(myNode, pos);
         }
     }
 }
 
 // Delete a value from the node
-int delValFromNode(int item, struct B1Node *myNode) {
+int delValFromNodeB1(int item, struct B1Node *myNode) {
     int pos, flag = 0;
     if (myNode) {
         if (item < myNode->item[1]) {
@@ -238,29 +237,29 @@ int delValFromNode(int item, struct B1Node *myNode) {
         }
         if (flag) {
             if (myNode->linker[pos - 1]) {
-                copySuccessor(myNode, pos);
-                flag = delValFromNode(myNode->item[pos], myNode->linker[pos]);
+                copySuccessorB1(myNode, pos);
+                flag = delValFromNodeB1(myNode->item[pos], myNode->linker[pos]);
                 if (flag == 0) {
                     printf("Given data is not present in B-Tree\n");
                 }
             } else {
-                removeVal(myNode, pos);
+                removeValB1(myNode, pos);
             }
         } else {
-            flag = delValFromNode(item, myNode->linker[pos]);
+            flag = delValFromNodeB1(item, myNode->linker[pos]);
         }
         if (myNode->linker[pos]) {
             if (myNode->linker[pos]->count < MINB1)
-                adjustNode(myNode, pos);
+                adjustNodeB1(myNode, pos);
         }
     }
     return flag;
 }
 
 // Delete operaiton
-void delete (int item, struct B1Node *myNode) {
+void deleteB1(int item, struct B1Node *myNode) {
     struct B1Node *tmp;
-    if (!delValFromNode(item, myNode)) {
+    if (!delValFromNodeB1(item, myNode)) {
         printf("Not present\n");
         return;
     } else {
@@ -274,7 +273,7 @@ void delete (int item, struct B1Node *myNode) {
     return;
 }
 
-void searching(int item, int *pos, struct B1Node *myNode) {
+void searchingB1(int item, int *pos, struct B1Node *myNode) {
     if (!myNode) {
         return;
     }
@@ -290,18 +289,18 @@ void searching(int item, int *pos, struct B1Node *myNode) {
             return;
         }
     }
-    searching(item, pos, myNode->linker[*pos]);
+    searchingB1(item, pos, myNode->linker[*pos]);
     return;
 }
 
-void traversal(struct B1Node *myNode) {
+void traversalB1(struct B1Node *myNode) {
     int i;
     if (myNode) {
         for (i = 0; i < myNode->count; i++) {
-            traversal(myNode->linker[i]);
+            traversalB1(myNode->linker[i]);
             printf("%d ", myNode->item[i + 1]);
         }
-        traversal(myNode->linker[i]);
+        traversalB1(myNode->linker[i]);
     }
 }
 
@@ -329,9 +328,9 @@ void deleteAllB1(B1Node *atual) {
 //   insertion(20);
 //   insertion(23);
 
-//   traversal(raizB1);
+//   traversalB1(raizB1);
 
-//   delete (20, raizB1);
+//   deleteB1(20, raizB1);
 //   printf("\n");
-//   traversal(raizB1);
+//   traversalB1(raizB1);
  //}

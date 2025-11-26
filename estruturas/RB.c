@@ -1,25 +1,16 @@
 // Implementing Red-Black Tree in C
 
+#include "../header.h"
 #include <stdio.h>
 #include <stdlib.h>
-#define ll long long
 
-enum nodeColor {
-  RED,
-  BLACK
-};  
-
-struct rbNode {
-  int data, color;
-  struct rbNode *link[2];
-};
-
-struct rbNode *root = NULL;
+extern estatisticasConjunto testes[10];
+extern int iterAtual;
 
 // Create a red-black tree
-struct rbNode *createNode(int data) {
-  struct rbNode *newnode;
-  newnode = (struct rbNode *)malloc(sizeof(struct rbNode));
+RBNode *createNodeRB(int data) {
+  RBNode *newnode;
+  newnode = (RBNode *)malloc(sizeof(RBNode));
   newnode->data = data;
   newnode->color = RED;
   newnode->link[0] = newnode->link[1] = NULL;
@@ -27,18 +18,19 @@ struct rbNode *createNode(int data) {
 }
 
 // Insert an node
-void insertion(int data) {
-  struct rbNode *stack[98], *ptr, *newnode, *xPtr, *yPtr;
+void insertRB(int data) {
+  RBNode *stack[98], *ptr, *newnode, *xPtr, *yPtr;
   int dir[98], ht = 0, index;
-  ptr = root;
-  if (!root) {
-    root = createNode(data);
+  ptr = raizRB;
+  if (!raizRB) {
+    raizRB = createNodeRB(data);
     return;
   }
 
-  stack[ht] = root;
+  stack[ht] = raizRB;
   dir[ht++] = 0;
   while (ptr != NULL) {
+    testes[iterAtual].iterRB++;
     if (ptr->data == data) {
       printf("Duplicates Not Allowed!!\n");
       return;
@@ -48,7 +40,7 @@ void insertion(int data) {
     ptr = ptr->link[index];
     dir[ht++] = index;
   }
-  stack[ht - 1]->link[index] = newnode = createNode(data);
+  stack[ht - 1]->link[index] = newnode = createNodeRB(data);
   while ((ht >= 3) && (stack[ht - 1]->color == RED)) {
     if (dir[ht - 2] == 0) {
       yPtr = stack[ht - 2]->link[1];
@@ -71,8 +63,8 @@ void insertion(int data) {
         yPtr->color = BLACK;
         xPtr->link[0] = yPtr->link[1];
         yPtr->link[1] = xPtr;
-        if (xPtr == root) {
-          root = yPtr;
+        if (xPtr == raizRB) {
+          raizRB = yPtr;
         } else {
           stack[ht - 3]->link[dir[ht - 3]] = yPtr;
         }
@@ -99,8 +91,8 @@ void insertion(int data) {
         xPtr->color = RED;
         xPtr->link[1] = yPtr->link[0];
         yPtr->link[0] = xPtr;
-        if (xPtr == root) {
-          root = yPtr;
+        if (xPtr == raizRB) {
+          raizRB = yPtr;
         } else {
           stack[ht - 3]->link[dir[ht - 3]] = yPtr;
         }
@@ -108,22 +100,22 @@ void insertion(int data) {
       }
     }
   }
-  root->color = BLACK;
+  raizRB->color = BLACK;
 }
 
 // Delete a node
-void deletion(int data) {
-  struct rbNode *stack[98], *ptr, *xPtr, *yPtr;
-  struct rbNode *pPtr, *qPtr, *rPtr;
+void deletionRB(int data) {
+  RBNode *stack[98], *ptr, *xPtr, *yPtr;
+  RBNode *pPtr, *qPtr, *rPtr;
   int dir[98], ht = 0, diff, i;
   enum nodeColor color;
 
-  if (!root) {
+  if (!raizRB) {
     printf("Tree not available\n");
     return;
   }
 
-  ptr = root;
+  ptr = raizRB;
   while (ptr != NULL) {
     if ((data - ptr->data) == 0)
       break;
@@ -134,11 +126,11 @@ void deletion(int data) {
   }
 
   if (ptr->link[1] == NULL) {
-    if ((ptr == root) && (ptr->link[0] == NULL)) {
+    if ((ptr == raizRB) && (ptr->link[0] == NULL)) {
       free(ptr);
-      root = NULL;
-    } else if (ptr == root) {
-      root = ptr->link[0];
+      raizRB = NULL;
+    } else if (ptr == raizRB) {
+      raizRB = ptr->link[0];
       free(ptr);
     } else {
       stack[ht - 1]->link[dir[ht - 1]] = ptr->link[0];
@@ -151,8 +143,8 @@ void deletion(int data) {
       xPtr->color = ptr->color;
       ptr->color = color;
 
-      if (ptr == root) {
-        root = xPtr;
+      if (ptr == raizRB) {
+        raizRB = xPtr;
       } else {
         stack[ht - 1]->link[dir[ht - 1]] = xPtr;
       }
@@ -180,8 +172,8 @@ void deletion(int data) {
       xPtr->link[0] = yPtr->link[1];
       yPtr->link[1] = ptr->link[1];
 
-      if (ptr == root) {
-        root = yPtr;
+      if (ptr == raizRB) {
+        raizRB = yPtr;
       }
 
       color = yPtr->color;
@@ -216,8 +208,8 @@ void deletion(int data) {
           stack[ht - 1]->link[1] = rPtr->link[0];
           rPtr->link[0] = stack[ht - 1];
 
-          if (stack[ht - 1] == root) {
-            root = rPtr;
+          if (stack[ht - 1] == raizRB) {
+            raizRB = rPtr;
           } else {
             stack[ht - 2]->link[dir[ht - 2]] = rPtr;
           }
@@ -246,8 +238,8 @@ void deletion(int data) {
           rPtr->link[1]->color = BLACK;
           stack[ht - 1]->link[1] = rPtr->link[0];
           rPtr->link[0] = stack[ht - 1];
-          if (stack[ht - 1] == root) {
-            root = rPtr;
+          if (stack[ht - 1] == raizRB) {
+            raizRB = rPtr;
           } else {
             stack[ht - 2]->link[dir[ht - 2]] = rPtr;
           }
@@ -264,8 +256,8 @@ void deletion(int data) {
           stack[ht - 1]->link[0] = rPtr->link[1];
           rPtr->link[1] = stack[ht - 1];
 
-          if (stack[ht - 1] == root) {
-            root = rPtr;
+          if (stack[ht - 1] == raizRB) {
+            raizRB = rPtr;
           } else {
             stack[ht - 2]->link[dir[ht - 2]] = rPtr;
           }
@@ -293,8 +285,8 @@ void deletion(int data) {
           rPtr->link[0]->color = BLACK;
           stack[ht - 1]->link[0] = rPtr->link[1];
           rPtr->link[1] = stack[ht - 1];
-          if (stack[ht - 1] == root) {
-            root = rPtr;
+          if (stack[ht - 1] == raizRB) {
+            raizRB = rPtr;
           } else {
             stack[ht - 2]->link[dir[ht - 2]] = rPtr;
           }
@@ -307,11 +299,11 @@ void deletion(int data) {
 }
 
 // Print the inorder traversal of the tree
-void inorderTraversal(struct rbNode *node) {
+void inorderTraversalRB(RBNode *node) {
   if (node) {
-    inorderTraversal(node->link[0]);
+    inorderTraversalRB(node->link[0]);
     printf("%d  ", node->data);
-    inorderTraversal(node->link[1]);
+    inorderTraversalRB(node->link[1]);
   }
   return;
 }
@@ -327,15 +319,15 @@ void inorderTraversal(struct rbNode *node) {
       case 1:
         printf("Enter the element to insert:");
         scanf("%d", &data);
-        insertion(data);
+        insertRB(data);
         break;
       case 2:
         printf("Enter the element to delete:");
         scanf("%d", &data);
-        deletion(data);
+        deletionRB(data);
         break;
       case 3:
-        inorderTraversal(root);
+        inorderTraversalRB(raizRB);
         printf("\n");
         break;
       case 4:

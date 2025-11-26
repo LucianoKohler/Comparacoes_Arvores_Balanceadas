@@ -1,320 +1,322 @@
 // Deleting a key from a B-tree in C
 
+#include "../header.h"
 #include <stdio.h>
 #include <stdlib.h>
-#define ll long long
 
-#define MAX 10
-#define MIN 9
-
-struct BTreeNode {
-  int item[MAX + 1], count;
-  struct BTreeNode *linker[MAX + 1];
-};
-
-struct BTreeNode *root;
+extern estatisticasConjunto testes[10];
+extern int iterAtual;
 
 // Node creation
-struct BTreeNode *createNode(int item, struct BTreeNode *child) {
-  struct BTreeNode *newNode;
-  newNode = (struct BTreeNode *)malloc(sizeof(struct BTreeNode));
-  newNode->item[1] = item;
-  newNode->count = 1;
-  newNode->linker[0] = root;
-  newNode->linker[1] = child;
-  return newNode;
+struct B10Node *createNodeB10(int item, struct B10Node *child) {
+    struct B10Node *newNode;
+    newNode = (struct B10Node *)malloc(sizeof(struct B10Node));
+    newNode->item[1] = item;
+    newNode->count = 1;
+    newNode->linker[0] = raizB10;
+    newNode->linker[1] = child;
+    return newNode;
 }
 
 // Add value to the node
-void addValToNode(int item, int pos, struct BTreeNode *node,
-          struct BTreeNode *child) {
-  int j = node->count;
-  while (j > pos) {
-    node->item[j + 1] = node->item[j];
-    node->linker[j + 1] = node->linker[j];
-    j--;
-  }
-  node->item[j + 1] = item;
-  node->linker[j + 1] = child;
-  node->count++;
+void addValToNodeB10(int item, int pos, struct B10Node *node, struct B10Node *child) {
+    int j = node->count;
+    while (j > pos) {
+        testes[iterAtual].iterB10++;
+        node->item[j + 1] = node->item[j];
+        node->linker[j + 1] = node->linker[j];
+        j--;
+    }
+    node->item[j + 1] = item;
+    node->linker[j + 1] = child;
+    node->count++;
 }
 
 // Split the node
-void splitNode(int item, int *pval, int pos, struct BTreeNode *node,
-         struct BTreeNode *child, struct BTreeNode **newNode) {
-  int median, j;
+void splitNodeB10(int item, int *pval, int pos, struct B10Node *node, struct B10Node *child, struct B10Node **newNode) {
+    int median, j;
 
-  if (pos > MIN)
-    median = MIN + 1;
-  else
-    median = MIN;
+    if (pos > MINB10)
+        median = MINB10 + 1;
+    else
+        median = MINB10;
 
-  *newNode = (struct BTreeNode *)malloc(sizeof(struct BTreeNode));
-  j = median + 1;
-  while (j <= MAX) {
-    (*newNode)->item[j - median] = node->item[j];
-    (*newNode)->linker[j - median] = node->linker[j];
-    j++;
-  }
-  node->count = median;
-  (*newNode)->count = MAX - median;
+    *newNode = (struct B10Node *)malloc(sizeof(struct B10Node));
+    j = median + 1;
+    while (j <= MAXB10) {
+        testes[iterAtual].iterB10++;
+        (*newNode)->item[j - median] = node->item[j];
+        (*newNode)->linker[j - median] = node->linker[j];
+        j++;
+    }
+    node->count = median;
+    (*newNode)->count = MAXB10 - median;
 
-  if (pos <= MIN) {
-    addValToNode(item, pos, node, child);
-  } else {
-    addValToNode(item, pos - median, *newNode, child);
-  }
-  *pval = node->item[node->count];
-  (*newNode)->linker[0] = node->linker[node->count];
-  node->count--;
+    if (pos <= MINB10) {
+        addValToNodeB10(item, pos, node, child);
+    } else {
+        addValToNodeB10(item, pos - median, *newNode, child);
+    }
+    *pval = node->item[node->count];
+    (*newNode)->linker[0] = node->linker[node->count];
+    node->count--;
 }
 
 // Set the value in the node
-int setValueInNode(int item, int *pval,
-           struct BTreeNode *node, struct BTreeNode **child) {
-  int pos;
-  if (!node) {
-    *pval = item;
-    *child = NULL;
-    return 1;
-  }
+int setValueInNodeB10(int item, int *pval, struct B10Node *node, struct B10Node **child) {
+    testes[iterAtual].iterB10++;
+    int pos;
+    if (!node) {
+        *pval = item;
+        *child = NULL;
+        return 1;
+    }
 
-  if (item < node->item[1]) {
-    pos = 0;
-  } else {
-    for (pos = node->count;
-       (item < node->item[pos] && pos > 1); pos--)
-      ;
-    if (item == node->item[pos]) {
-      printf("Duplicates not allowed\n");
-      return 0;
-    }
-  }
-  if (setValueInNode(item, pval, node->linker[pos], child)) {
-    if (node->count < MAX) {
-      addValToNode(*pval, pos, node, *child);
+    if (item < node->item[1]) {
+        pos = 0;
     } else {
-      splitNode(*pval, pval, pos, node, *child, child);
-      return 1;
+        for (pos = node->count; (item < node->item[pos] && pos > 1); pos--);
+        if (item == node->item[pos]) {
+            printf("Duplicates not allowed\n");
+            return 0;
+        }
     }
-  }
-  return 0;
+    if (setValueInNodeB10(item, pval, node->linker[pos], child)) {
+        if (node->count < MAXB10) {
+            addValToNodeB10(*pval, pos, node, *child);
+        } else {
+            splitNodeB10(*pval, pval, pos, node, *child, child);
+            return 1;
+        }
+    }
+    return 0;
 }
 
 // Insertion operation
-void insertion(int item) {
-  int flag, i;
-  struct BTreeNode *child;
+void insertB10(int item) {
+    int flag, i;
+    struct B10Node *child;
 
-  flag = setValueInNode(item, &i, root, &child);
-  if (flag)
-    root = createNode(i, child);
+    flag = setValueInNodeB10(item, &i, raizB10, &child);
+    if (flag)
+        raizB10 = createNodeB10(i, child);
 }
 
 // Copy the successor
-void copySuccessor(struct BTreeNode *myNode, int pos) {
-  struct BTreeNode *dummy;
-  dummy = myNode->linker[pos];
+void copySuccessorB10(struct B10Node *myNode, int pos) {
+    struct B10Node *dummy;
+    dummy = myNode->linker[pos];
 
-  for (; dummy->linker[0] != NULL;)
-    dummy = dummy->linker[0];
-  myNode->item[pos] = dummy->item[1];
+    for (; dummy->linker[0] != NULL;)
+        dummy = dummy->linker[0];
+    myNode->item[pos] = dummy->item[1];
 }
 
 // Remove the value
-void removeVal(struct BTreeNode *myNode, int pos) {
-  int i = pos + 1;
-  while (i <= myNode->count) {
-    myNode->item[i - 1] = myNode->item[i];
-    myNode->linker[i - 1] = myNode->linker[i];
-    i++;
-  }
-  myNode->count--;
+void removeValB10(struct B10Node *myNode, int pos) {
+    int i = pos + 1;
+    while (i <= myNode->count) {
+        myNode->item[i - 1] = myNode->item[i];
+        myNode->linker[i - 1] = myNode->linker[i];
+        i++;
+    }
+    myNode->count--;
 }
 
 // Do right shift
-void rightShift(struct BTreeNode *myNode, int pos) {
-  struct BTreeNode *x = myNode->linker[pos];
-  int j = x->count;
+void rightShiftB10(struct B10Node *myNode, int pos) {
+    struct B10Node *x = myNode->linker[pos];
+    int j = x->count;
 
-  while (j > 0) {
-    x->item[j + 1] = x->item[j];
-    x->linker[j + 1] = x->linker[j];
-  }
-  x->item[1] = myNode->item[pos];
-  x->linker[1] = x->linker[0];
-  x->count++;
+    while (j > 0) {
+        x->item[j + 1] = x->item[j];
+        x->linker[j + 1] = x->linker[j];
+    }
+    x->item[1] = myNode->item[pos];
+    x->linker[1] = x->linker[0];
+    x->count++;
 
-  x = myNode->linker[pos - 1];
-  myNode->item[pos] = x->item[x->count];
-  myNode->linker[pos] = x->linker[x->count];
-  x->count--;
-  return;
+    x = myNode->linker[pos - 1];
+    myNode->item[pos] = x->item[x->count];
+    myNode->linker[pos] = x->linker[x->count];
+    x->count--;
+    return;
 }
 
 // Do left shift
-void leftShift(struct BTreeNode *myNode, int pos) {
-  int j = 1;
-  struct BTreeNode *x = myNode->linker[pos - 1];
+void leftShiftB10(struct B10Node *myNode, int pos) {
+    int j = 1;
+    struct B10Node *x = myNode->linker[pos - 1];
 
-  x->count++;
-  x->item[x->count] = myNode->item[pos];
-  x->linker[x->count] = myNode->linker[pos]->linker[0];
+    x->count++;
+    x->item[x->count] = myNode->item[pos];
+    x->linker[x->count] = myNode->linker[pos]->linker[0];
 
-  x = myNode->linker[pos];
-  myNode->item[pos] = x->item[1];
-  x->linker[0] = x->linker[1];
-  x->count--;
+    x = myNode->linker[pos];
+    myNode->item[pos] = x->item[1];
+    x->linker[0] = x->linker[1];
+    x->count--;
 
-  while (j <= x->count) {
-    x->item[j] = x->item[j + 1];
-    x->linker[j] = x->linker[j + 1];
-    j++;
-  }
-  return;
+    while (j <= x->count) {
+        x->item[j] = x->item[j + 1];
+        x->linker[j] = x->linker[j + 1];
+        j++;
+    }
+    return;
 }
 
 // Merge the nodes
-void mergeNodes(struct BTreeNode *myNode, int pos) {
-  int j = 1;
-  struct BTreeNode *x1 = myNode->linker[pos], *x2 = myNode->linker[pos - 1];
+void mergeNodesB10(struct B10Node *myNode, int pos) {
+    int j = 1;
+    struct B10Node *x1 = myNode->linker[pos], *x2 = myNode->linker[pos - 1];
 
-  x2->count++;
-  x2->item[x2->count] = myNode->item[pos];
-  x2->linker[x2->count] = myNode->linker[0];
-
-  while (j <= x1->count) {
     x2->count++;
-    x2->item[x2->count] = x1->item[j];
-    x2->linker[x2->count] = x1->linker[j];
-    j++;
-  }
+    x2->item[x2->count] = myNode->item[pos];
+    x2->linker[x2->count] = myNode->linker[0];
 
-  j = pos;
-  while (j < myNode->count) {
-    myNode->item[j] = myNode->item[j + 1];
-    myNode->linker[j] = myNode->linker[j + 1];
-    j++;
-  }
-  myNode->count--;
-  free(x1);
+    while (j <= x1->count) {
+        x2->count++;
+        x2->item[x2->count] = x1->item[j];
+        x2->linker[x2->count] = x1->linker[j];
+        j++;
+    }
+
+    j = pos;
+    while (j < myNode->count) {
+        myNode->item[j] = myNode->item[j + 1];
+        myNode->linker[j] = myNode->linker[j + 1];
+        j++;
+    }
+    myNode->count--;
+    free(x1);
 }
 
 // Adjust the node
-void adjustNode(struct BTreeNode *myNode, int pos) {
-  if (!pos) {
-    if (myNode->linker[1]->count > MIN) {
-      leftShift(myNode, 1);
-    } else {
-      mergeNodes(myNode, 1);
-    }
-  } else {
-    if (myNode->count != pos) {
-      if (myNode->linker[pos - 1]->count > MIN) {
-        rightShift(myNode, pos);
-      } else {
-        if (myNode->linker[pos + 1]->count > MIN) {
-          leftShift(myNode, pos + 1);
+void adjustNodeB10(struct B10Node *myNode, int pos) {
+    if (!pos) {
+        if (myNode->linker[1]->count > MINB10) {
+            leftShiftB10(myNode, 1);
         } else {
-          mergeNodes(myNode, pos);
+            mergeNodesB10(myNode, 1);
         }
-      }
     } else {
-      if (myNode->linker[pos - 1]->count > MIN)
-        rightShift(myNode, pos);
-      else
-        mergeNodes(myNode, pos);
+        if (myNode->count != pos) {
+            if (myNode->linker[pos - 1]->count > MINB10) {
+                rightShiftB10(myNode, pos);
+            } else {
+                if (myNode->linker[pos + 1]->count > MINB10) {
+                    leftShiftB10(myNode, pos + 1);
+                } else {
+                    mergeNodesB10(myNode, pos);
+                }
+            }
+        } else {
+            if (myNode->linker[pos - 1]->count > MINB10)
+                rightShiftB10(myNode, pos);
+            else
+                mergeNodesB10(myNode, pos);
+        }
     }
-  }
 }
 
 // Delete a value from the node
-int delValFromNode(int item, struct BTreeNode *myNode) {
-  int pos, flag = 0;
-  if (myNode) {
-    if (item < myNode->item[1]) {
-      pos = 0;
-      flag = 0;
-    } else {
-      for (pos = myNode->count; (item < myNode->item[pos] && pos > 1); pos--)
-        ;
-      if (item == myNode->item[pos]) {
-        flag = 1;
-      } else {
-        flag = 0;
-      }
-    }
-    if (flag) {
-      if (myNode->linker[pos - 1]) {
-        copySuccessor(myNode, pos);
-        flag = delValFromNode(myNode->item[pos], myNode->linker[pos]);
-        if (flag == 0) {
-          printf("Given data is not present in B-Tree\n");
+int delValFromNodeB10(int item, struct B10Node *myNode) {
+    int pos, flag = 0;
+    if (myNode) {
+        if (item < myNode->item[1]) {
+            pos = 0;
+            flag = 0;
+        } else {
+            for (pos = myNode->count; (item < myNode->item[pos] && pos > 1); pos--)
+                ;
+            if (item == myNode->item[pos]) {
+                flag = 1;
+            } else {
+                flag = 0;
+            }
         }
-      } else {
-        removeVal(myNode, pos);
-      }
-    } else {
-      flag = delValFromNode(item, myNode->linker[pos]);
+        if (flag) {
+            if (myNode->linker[pos - 1]) {
+                copySuccessorB10(myNode, pos);
+                flag = delValFromNodeB10(myNode->item[pos], myNode->linker[pos]);
+                if (flag == 0) {
+                    printf("Given data is not present in B-Tree\n");
+                }
+            } else {
+                removeValB10(myNode, pos);
+            }
+        } else {
+            flag = delValFromNodeB10(item, myNode->linker[pos]);
+        }
+        if (myNode->linker[pos]) {
+            if (myNode->linker[pos]->count < MINB10)
+                adjustNodeB10(myNode, pos);
+        }
     }
-    if (myNode->linker[pos]) {
-      if (myNode->linker[pos]->count < MIN)
-        adjustNode(myNode, pos);
-    }
-  }
-  return flag;
+    return flag;
 }
 
 // Delete operaiton
-void delete (int item, struct BTreeNode *myNode) {
-  struct BTreeNode *tmp;
-  if (!delValFromNode(item, myNode)) {
-    printf("Not present\n");
+void deleteB10(int item, struct B10Node *myNode) {
+    struct B10Node *tmp;
+    if (!delValFromNodeB10(item, myNode)) {
+        printf("Not present\n");
+        return;
+    } else {
+        if (myNode->count == 0) {
+            tmp = myNode;
+            myNode = myNode->linker[0];
+            free(tmp);
+        }
+    }
+    raizB10 = myNode;
     return;
-  } else {
-    if (myNode->count == 0) {
-      tmp = myNode;
-      myNode = myNode->linker[0];
-      free(tmp);
-    }
-  }
-  root = myNode;
-  return;
 }
 
-void searching(int item, int *pos, struct BTreeNode *myNode) {
-  if (!myNode) {
+void searchingB10(int item, int *pos, struct B10Node *myNode) {
+    if (!myNode) {
+        return;
+    }
+
+    if (item < myNode->item[1]) {
+        *pos = 0;
+    } else {
+        for (*pos = myNode->count;
+                (item < myNode->item[*pos] && *pos > 1); (*pos)--)
+            ;
+        if (item == myNode->item[*pos]) {
+            printf("%d present in B-tree", item);
+            return;
+        }
+    }
+    searchingB10(item, pos, myNode->linker[*pos]);
     return;
-  }
-
-  if (item < myNode->item[1]) {
-    *pos = 0;
-  } else {
-    for (*pos = myNode->count;
-       (item < myNode->item[*pos] && *pos > 1); (*pos)--)
-      ;
-    if (item == myNode->item[*pos]) {
-      printf("%d present in B-tree", item);
-      return;
-    }
-  }
-  searching(item, pos, myNode->linker[*pos]);
-  return;
 }
 
-void traversal(struct BTreeNode *myNode) {
-  int i;
-  if (myNode) {
-    for (i = 0; i < myNode->count; i++) {
-      traversal(myNode->linker[i]);
-      printf("%d ", myNode->item[i + 1]);
+void traversalB10(struct B10Node *myNode) {
+    int i;
+    if (myNode) {
+        for (i = 0; i < myNode->count; i++) {
+            traversalB10(myNode->linker[i]);
+            printf("%d ", myNode->item[i + 1]);
+        }
+        traversalB10(myNode->linker[i]);
     }
-    traversal(myNode->linker[i]);
-  }
 }
 
-// int main() {
+void deleteAllB10(B10Node *atual) {
+    if (atual == NULL) {
+        return;
+    }
+    for(int i = 0; i < atual->count; i++){
+        deleteAllB10(atual->linker[i]);
+    }
+    free(atual);
+}
+
+//int main() {
 //   int item, ch;
+
 //   insertion(8);
 //   insertion(9);
 //   insertion(10);
@@ -326,9 +328,9 @@ void traversal(struct BTreeNode *myNode) {
 //   insertion(20);
 //   insertion(23);
 
-//   traversal(root);
+//   traversalB10(raizB10);
 
-//   delete (20, root);
+//   deleteB10(20, raizB10);
 //   printf("\n");
-//   traversal(root);
-// }
+//   traversalB10(raizB10);
+ //}

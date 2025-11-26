@@ -12,10 +12,10 @@
 #include "header.h"
 // Inclusão das estruturas
 #include "estruturas/AVL.c"
-// #include "estruturas/rubroNegra.c"
- #include "estruturas/B1.c"
-// #include "estruturas/B5.c"
-// #include "estruturas/B10.c"
+#include "estruturas/RB.c"
+#include "estruturas/B1.c"
+#include "estruturas/B5.c"
+#include "estruturas/B10.c"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -41,7 +41,7 @@ int main(){
         testes[iterAtual].iterB1 = 0;
         testes[iterAtual].iterB5 = 0;
         testes[iterAtual].iterB10 = 0;
-        testes[iterAtual].iterRubroNegra = 0;
+        testes[iterAtual].iterRB = 0;
         
         ll conjValoresAleatorios[tamConjunto];
         for(int i = 0; i < tamConjunto; i++){
@@ -65,8 +65,25 @@ int main(){
         deleteAllB1(raizB1);
 
         // 3: Árvore B de ordem 5
+        raizB5 = NULL;
+        for(int i = 0; i < tamConjunto; i++){
+            insertB5(conjValoresAleatorios[i]);
+        }
+        deleteAllB5(raizB5);
+
         // 4: Árvore B de ordem 10
+        raizB10 = NULL;
+        for(int i = 0; i < tamConjunto; i++){
+            insertB10(conjValoresAleatorios[i]);
+        }
+        deleteAllB10(raizB10);
+
         // 5: Árvore Rubro-Negra
+        raizRB = NULL;
+        for(int i = 0; i < tamConjunto; i++){
+            insertRB(conjValoresAleatorios[i]);
+        }
+        // deleteAllRB(raizRB);
 
         printf("|%8d|%10lld|%10lld|%10lld|%10lld|%10lld|\n", 
             tamConjunto,
@@ -74,7 +91,7 @@ int main(){
             testes[iterAtual].iterB1,
             testes[iterAtual].iterB5,
             testes[iterAtual].iterB10,
-            testes[iterAtual].iterRubroNegra);
+            testes[iterAtual].iterRB);
         printf("|--------|----------|----------|----------|----------|----------|\n");
     }
 
