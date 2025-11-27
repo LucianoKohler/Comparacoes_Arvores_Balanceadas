@@ -1,19 +1,16 @@
 // Implementing Red-Black Tree in C
-
 #include "../header.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
+#include <stdbool.h>
 
-#define RED 1
-#define BLACK 0
-
-extern estatisticasConjunto testes[10];
-extern int iterAtual;
+struct rbNode *root = NULL;
 
 // Create a red-black tree
-RBNode *createNodeRB(int data) {
-  RBNode *newnode;
-  newnode = (RBNode *)malloc(sizeof(RBNode));
+struct rbNode *createNode(int data) {
+  struct rbNode *newnode;
+  newnode = (struct rbNode *)malloc(sizeof(struct rbNode));
   newnode->data = data;
   newnode->color = RED;
   newnode->link[0] = newnode->link[1] = NULL;
@@ -21,19 +18,18 @@ RBNode *createNodeRB(int data) {
 }
 
 // Insert an node
-void insertRB(int data) {
-  RBNode *stack[98], *ptr, *newnode, *xPtr, *yPtr;
+void insertion(int data) {
+  struct rbNode *stack[98], *ptr, *newnode, *xPtr, *yPtr;
   int dir[98], ht = 0, index;
-  ptr = raizRB;
-  if (!raizRB) {
-    raizRB = createNodeRB(data);
+  ptr = root;
+  if (!root) {
+    root = createNode(data);
     return;
   }
 
-  stack[ht] = raizRB;
+  stack[ht] = root;
   dir[ht++] = 0;
   while (ptr != NULL) {
-    testes[iterAtual].iterAddRB++;
     if (ptr->data == data) {
       printf("Duplicates Not Allowed!!\n");
       return;
@@ -43,7 +39,7 @@ void insertRB(int data) {
     ptr = ptr->link[index];
     dir[ht++] = index;
   }
-  stack[ht - 1]->link[index] = newnode = createNodeRB(data);
+  stack[ht - 1]->link[index] = newnode = createNode(data);
   while ((ht >= 3) && (stack[ht - 1]->color == RED)) {
     if (dir[ht - 2] == 0) {
       yPtr = stack[ht - 2]->link[1];
@@ -66,8 +62,8 @@ void insertRB(int data) {
         yPtr->color = BLACK;
         xPtr->link[0] = yPtr->link[1];
         yPtr->link[1] = xPtr;
-        if (xPtr == raizRB) {
-          raizRB = yPtr;
+        if (xPtr == root) {
+          root = yPtr;
         } else {
           stack[ht - 3]->link[dir[ht - 3]] = yPtr;
         }
@@ -94,8 +90,8 @@ void insertRB(int data) {
         xPtr->color = RED;
         xPtr->link[1] = yPtr->link[0];
         yPtr->link[0] = xPtr;
-        if (xPtr == raizRB) {
-          raizRB = yPtr;
+        if (xPtr == root) {
+          root = yPtr;
         } else {
           stack[ht - 3]->link[dir[ht - 3]] = yPtr;
         }
@@ -103,221 +99,240 @@ void insertRB(int data) {
       }
     }
   }
-  raizRB->color = BLACK;
+  root->color = BLACK;
 }
 
 // Delete a node
-// Verifica se um nó é vermelho (seguro contra NULL)
-int isRed(RBNode *root) {
-    return (root != NULL && root->color == RED);
-}
+void deletion(int data) {
+  struct rbNode *stack[98], *ptr, *xPtr, *yPtr;
+  struct rbNode *pPtr, *qPtr, *rPtr;
+  int dir[98], ht = 0, diff, i;
+  enum nodeColor color;
 
-// Rotação simples para rebalanceamento
-// dir == 0: Rotação para a esquerda
-// dir == 1: Rotação para a direita
-RBNode *rotateSingle(RBNode *root, int dir) {
-    RBNode *save = root->link[!dir];
-    root->link[!dir] = save->link[dir];
-    save->link[dir] = root;
-    
-    // Ajuste de cores padrão na rotação de remoção
-    save->color = root->color;
-    root->color = BLACK;
-    
-    return save;
-}
+  if (!root) {
+    printf("Tree not available\n");
+    return;
+  }
 
-// Rotação dupla (quando o sobrinho "de dentro" é o vermelho)
-RBNode *rotateDouble(RBNode *root, int dir) {
-    root->link[!dir] = rotateSingle(root->link[!dir], !dir);
-    return rotateSingle(root, dir);
-}
+  ptr = root;
+  while (ptr != NULL) {
+    if ((data - ptr->data) == 0)
+      break;
+    diff = (data - ptr->data) > 0 ? 1 : 0;
+    stack[ht] = ptr;
+    dir[ht++] = diff;
+    ptr = ptr->link[diff];
+  }
 
-// --------------------------------------------------------------------------
-// Lógica de Rebalanceamento (Fix-up)
-// --------------------------------------------------------------------------
-
-// Função chamada quando a altura negra é violada (Shortage / Duplo Preto)
-// root: O pai do nó onde ocorreu a remoção
-// dir: A direção onde a altura negra diminuiu (0 esquerda, 1 direita)
-// shortage: ponteiro de controle para saber se ainda precisamos rebalancear acima
-RBNode *fixDelete(RBNode *root, int dir, int *shortage) {
-    if (root == NULL) return NULL;
-
-    RBNode *sibling = root->link[!dir]; // O irmão do lado oposto
-
-    // Caso 1: Irmão é Vermelho
-    // A rotação transforma o irmão em preto e descemos o nível para tratar os outros casos
-    if (isRed(sibling)) {
-        root = rotateSingle(root, dir);
-        sibling = root->link[!dir]; // Atualiza a referência do irmão após rotação
+  if (ptr->link[1] == NULL) {
+    if ((ptr == root) && (ptr->link[0] == NULL)) {
+      free(ptr);
+      root = NULL;
+    } else if (ptr == root) {
+      root = ptr->link[0];
+      free(ptr);
+    } else {
+      stack[ht - 1]->link[dir[ht - 1]] = ptr->link[0];
     }
+  } else {
+    xPtr = ptr->link[1];
+    if (xPtr->link[0] == NULL) {
+      xPtr->link[0] = ptr->link[0];
+      color = xPtr->color;
+      xPtr->color = ptr->color;
+      ptr->color = color;
 
-    // O irmão agora é PRETO. Verificamos seus filhos (sobrinhos)
-    if (sibling != NULL) {
-        // Verifica se ambos os sobrinhos são pretos (ou NULL)
-        if (!isRed(sibling->link[0]) && !isRed(sibling->link[1])) {
+      if (ptr == root) {
+        root = xPtr;
+      } else {
+        stack[ht - 1]->link[dir[ht - 1]] = xPtr;
+      }
 
-            // Caso 2: Irmão Preto e Sobrinhos Pretos
-            // Pintamos o irmão de vermelho para equilibrar a altura localmente
-            sibling->color = RED;
-            
-            // Se o pai era vermelho, pintamos de preto e o problema acaba
-            if (isRed(root)) {
-                root->color = BLACK;
-                *shortage = 0; 
-            }
-            // Se o pai era preto, ele agora tem "shortage" (duplo preto),
-            // mantemos *shortage = 1 para a recursão tratar no nível acima.
+      dir[ht] = 1;
+      stack[ht++] = xPtr;
+    } else {
+      i = ht++;
+      while (1) {
+        dir[ht] = 0;
+        stack[ht++] = xPtr;
+        yPtr = xPtr->link[0];
+        if (!yPtr->link[0])
+          break;
+        xPtr = yPtr;
+      }
+
+      dir[i] = 1;
+      stack[i] = yPtr;
+      if (i > 0)
+        stack[i - 1]->link[dir[i - 1]] = yPtr;
+
+      yPtr->link[0] = ptr->link[0];
+
+      xPtr->link[0] = yPtr->link[1];
+      yPtr->link[1] = ptr->link[1];
+
+      if (ptr == root) {
+        root = yPtr;
+      }
+
+      color = yPtr->color;
+      yPtr->color = ptr->color;
+      ptr->color = color;
+    }
+  }
+
+  if (ht < 1)
+    return;
+
+
+  if (ptr->color == BLACK) {
+    while (1) {
+      pPtr = stack[ht - 1]->link[dir[ht - 1]];
+      if (pPtr && pPtr->color == RED) {
+        pPtr->color = BLACK;
+        break;
+      }
+
+      if (ht < 2)
+        break;
+
+      if (dir[ht - 2] == 0) {
+        rPtr = stack[ht - 1]->link[1];
+
+        if (!rPtr)
+          break;
+          
+        if (rPtr->color == RED) {
+          stack[ht - 1]->color = RED;
+          rPtr->color = BLACK;
+          stack[ht - 1]->link[1] = rPtr->link[0];
+          rPtr->link[0] = stack[ht - 1];
+
+          if (stack[ht - 1] == root) {
+            root = rPtr;
+          } else {
+            stack[ht - 2]->link[dir[ht - 2]] = rPtr;
+          }
+          dir[ht] = 0;
+          stack[ht] = stack[ht - 1];
+          stack[ht - 1] = rPtr;
+          ht++;
+
+          rPtr = stack[ht - 1]->link[1];
+        }
+        if (rPtr && (!rPtr->link[0] || rPtr->link[0]->color == BLACK) &&
+          (!rPtr->link[1] || rPtr->link[1]->color == BLACK)) {
+          rPtr->color = RED;
         } 
-        else {
-
-            // Caso 3 ou 4: Pelo menos um sobrinho é vermelho
-            
-            // Se o sobrinho oposto à direção for preto, precisamos de rotação dupla (Caso 3)
-            // Ex: Se buraco na esq (dir=0), e sobrinho dir (link[1]) é preto -> roda dupla
-            if (root->link[!dir] == sibling && !isRed(sibling->link[!dir])) {
-                 root = rotateDouble(root, dir);
-            } else {
-                 // Caso 4: Rotação simples resolve
-                 root = rotateSingle(root, dir);
-            }
-
-            // Após essas rotações no caso 3 ou 4, a altura negra é restaurada
-            // Pintamos os novos filhos de preto para garantir as propriedades
-            if (root->link[0]) root->link[0]->color = BLACK;
-            if (root->link[1]) root->link[1]->color = BLACK;
-            
-            *shortage = 0; // Problema resolvido
+     else if(rPtr){
+          if ((!rPtr->link[1] || rPtr->link[1]->color == BLACK)) {
+            qPtr = rPtr->link[0];
+            rPtr->color = RED;
+            qPtr->color = BLACK;
+            rPtr->link[0] = qPtr->link[1];
+            qPtr->link[1] = rPtr;
+            rPtr = stack[ht - 1]->link[1] = qPtr;
+          }
+          rPtr->color = stack[ht - 1]->color;
+          stack[ht - 1]->color = BLACK;
+          rPtr->link[1]->color = BLACK;
+          stack[ht - 1]->link[1] = rPtr->link[0];
+          rPtr->link[0] = stack[ht - 1];
+          if (stack[ht - 1] == root) {
+            root = rPtr;
+          } else {
+            stack[ht - 2]->link[dir[ht - 2]] = rPtr;
+          }
+          break;
         }
+      } else {
+        rPtr = stack[ht - 1]->link[0];
+        if (!rPtr)
+          break;
+
+        if (rPtr->color == RED) {
+          stack[ht - 1]->color = RED;
+          rPtr->color = BLACK;
+          stack[ht - 1]->link[0] = rPtr->link[1];
+          rPtr->link[1] = stack[ht - 1];
+
+          if (stack[ht - 1] == root) {
+            root = rPtr;
+          } else {
+            stack[ht - 2]->link[dir[ht - 2]] = rPtr;
+          }
+          dir[ht] = 1;
+          stack[ht] = stack[ht - 1];
+          stack[ht - 1] = rPtr;
+          ht++;
+
+          rPtr = stack[ht - 1]->link[0];
+        }
+        if (rPtr && (!rPtr->link[0] || rPtr->link[0]->color == BLACK) &&
+          (!rPtr->link[1] || rPtr->link[1]->color == BLACK)) {
+          rPtr->color = RED;
+        } else if(rPtr) {
+          if (!rPtr->link[0] || rPtr->link[0]->color == BLACK) {
+            qPtr = rPtr->link[1];
+            rPtr->color = RED;
+            qPtr->color = BLACK;
+            rPtr->link[1] = qPtr->link[0];
+            qPtr->link[0] = rPtr;
+            rPtr = stack[ht - 1]->link[0] = qPtr;
+          }
+          rPtr->color = stack[ht - 1]->color;
+          stack[ht - 1]->color = BLACK;
+          rPtr->link[0]->color = BLACK;
+          stack[ht - 1]->link[0] = rPtr->link[1];
+          rPtr->link[1] = stack[ht - 1];
+          if (stack[ht - 1] == root) {
+            root = rPtr;
+          } else {
+            stack[ht - 2]->link[dir[ht - 2]] = rPtr;
+          }
+          break;
+        }
+      }
+      ht--;
     }
-    return root;
+  }
 }
 
-// --------------------------------------------------------------------------
-// Função Principal de Deleção (Recursiva)
-// --------------------------------------------------------------------------
 
-RBNode *rb_delete_rec(RBNode *root, int data, int *shortage) {
 
-  if (root == NULL) {
-    
-        *shortage = 0;
-        return NULL;
-    }
+bool find_value(int data){
+     if(!root)return false;
 
-    int found = (root->data == data);
-  
-    int dir = (root->data < data); // 0 se menor (vai pra esq), 1 se maior (vai pra dir)
-
-    if (found) {
-
-        // Caso A: Nó com menos de 2 filhos
-        if (root->link[0] == NULL || root->link[1] == NULL) {
-          
-            RBNode *child = root->link[root->link[0] == NULL]; // Pega o filho não nulo (se houver)
-
-            // Se o nó removido é VERMELHO, não afeta a altura negra.
-            // Se é PRETO, cria um "shortage" (buraco na altura negra).
-            if (root->color == BLACK) {
-              
-                if (isRed(child)) {
-                    // Solução simples: Se o substituto é vermelho, pinta de preto
-                    child->color = BLACK;
-                    *shortage = 0;
-                } else {
-                    // Se o substituto também é preto (ou NULL), propagamos o shortage
-                    *shortage = 1;
-                }
-            } else {
-                *shortage = 0;
-            }
-
-            free(root);
-            return child;
-        }
-
-        // Caso B: Nó com 2 filhos -> Troca pelo sucessor
-        // Encontra o sucessor (menor elemento da subárvore direita)
-        RBNode *succ = root->link[1];
-        while (succ->link[0] != NULL){
-          
-          succ = succ->link[0];
-        }
-          
-
-        // Copia os dados do sucessor para o nó atual
-        root->data = succ->data;
-
-        // Agora deletamos o sucessor original (que está na direita)
-        // Mudamos o alvo da deleção para o valor do sucessor e forçamos dir = 1
-        data = succ->data;
-        dir = 1;
-    }
-
-    // Chamada recursiva para continuar a busca ou remover o sucessor duplicado
-    root->link[dir] = rb_delete_rec(root->link[dir], data, shortage);
-
-    // Na volta da recursão: Se houver shortage vindo do filho, tentamos corrigir
-    if (*shortage) {
-          testes[iterAtual].iterRemovRB++;
-
-        root = fixDelete(root, dir, shortage);
-    }
-
-    return root;
-}
-
-// Função wrapper (Interface pública)
-void remover(RBNode **raiz, int valor) {
-    int shortage = 0;
-    *raiz = rb_delete_rec(*raiz, valor, &shortage);
-    
-    // A raiz final de uma RB Tree deve ser sempre preta
-    if (*raiz != NULL) {
-        (*raiz)->color = BLACK;
-    }
+     struct rbNode *ptr = root;
+     while(ptr){
+          if(ptr->data == data)return true;
+          if(ptr->data > data)ptr = ptr->link[0];
+          else ptr = ptr->link[1];
+     }
+     return false;
 }
 
 // Print the inorder traversal of the tree
-void inorderTraversalRB(RBNode *node) {
+void inorderTraversal(struct rbNode *node) {
   if (node) {
-    inorderTraversalRB(node->link[0]);
+    inorderTraversal(node->link[0]);
     printf("%d  ", node->data);
-    inorderTraversalRB(node->link[1]);
+    inorderTraversal(node->link[1]);
   }
   return;
 }
 
-/*int main() {
-  int ch, data;
-  while (1) {
-    printf("1. Insertion\t2. Deletion\n");
-    printf("3. Traverse\t4. Exit");
-    printf("\nEnter your choice:");
-    scanf("%d", &ch);
-    switch (ch) {
-      case 1:
-        printf("Enter the element to insert:");
-        scanf("%d", &data);
-        insertRB(data);
-        break;
-      case 2:
-        printf("Enter the element to delete:");
-        scanf("%d", &data);
-        deletionRB(data);
-        break;
-      case 3:
-        inorderTraversalRB(raizRB);
-        printf("\n");
-        break;
-      case 4:
-        exit(0);
-      default:
-        printf("Not available\n");
-        break;
-    }
-    printf("\n");
-  }
-  return 0;
-}*/
+// Driver code
+// int main() {
+//      srand(time(NULL));
+//      for(int i = 0; i < N; i++)
+//           a[i] = rand();
+//      for(int i = 0; i < N; i++)
+//           insertion(a[i]);
+//      for(int i = 0; i < N; i++){
+//           if(find_value(a[i]))
+//                deletion(a[i]);
+//      }
+//      inorderTraversal(root);
+//      printf("\n");
+// }

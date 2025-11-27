@@ -87,11 +87,11 @@ int main(){
         // 5: Árvore Rubro-Negra
         raizRB = NULL;
         for(int i = 0; i < tamConjunto; i++){
-            insertRB(conjValoresAleatorios[i]);
+            insertion(conjValoresAleatorios[i]);
         }
 
         for(int i = 0; i < tamConjunto; i++){
-            remover(&raizRB, conjValoresAleatorios[i]);
+            deletion(conjValoresAleatorios[i]);
         }
 
 

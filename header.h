@@ -38,13 +38,13 @@ typedef struct arvoreB {
 enum nodeColor {
   RED,
   BLACK
-};  
+};
 
-typedef struct RBNode {
+typedef struct rbNode {
   int data, color;
-  struct RBNode *link[2];
-} RBNode;
+  struct rbNode *link[2];
+}rbNode;
 
-RBNode *raizRB;
+rbNode *raizRB;
 
 #endif
