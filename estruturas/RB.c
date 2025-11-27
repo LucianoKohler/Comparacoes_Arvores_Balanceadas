@@ -157,6 +157,7 @@ RBNode *fixDelete(RBNode *root, int dir, int *shortage) {
     if (sibling != NULL) {
         // Verifica se ambos os sobrinhos são pretos (ou NULL)
         if (!isRed(sibling->link[0]) && !isRed(sibling->link[1])) {
+
             // Caso 2: Irmão Preto e Sobrinhos Pretos
             // Pintamos o irmão de vermelho para equilibrar a altura localmente
             sibling->color = RED;
@@ -170,6 +171,7 @@ RBNode *fixDelete(RBNode *root, int dir, int *shortage) {
             // mantemos *shortage = 1 para a recursão tratar no nível acima.
         } 
         else {
+
             // Caso 3 ou 4: Pelo menos um sobrinho é vermelho
             
             // Se o sobrinho oposto à direção for preto, precisamos de rotação dupla (Caso 3)
@@ -197,27 +199,28 @@ RBNode *fixDelete(RBNode *root, int dir, int *shortage) {
 // --------------------------------------------------------------------------
 
 RBNode *rb_delete_rec(RBNode *root, int data, int *shortage) {
-  
-  if (root != NULL){
-    testes[iterAtual].iterRemovRB++;
-  }
 
   if (root == NULL) {
+    
         *shortage = 0;
         return NULL;
     }
 
     int found = (root->data == data);
+  
     int dir = (root->data < data); // 0 se menor (vai pra esq), 1 se maior (vai pra dir)
 
     if (found) {
+
         // Caso A: Nó com menos de 2 filhos
         if (root->link[0] == NULL || root->link[1] == NULL) {
+          
             RBNode *child = root->link[root->link[0] == NULL]; // Pega o filho não nulo (se houver)
 
             // Se o nó removido é VERMELHO, não afeta a altura negra.
             // Se é PRETO, cria um "shortage" (buraco na altura negra).
             if (root->color == BLACK) {
+              
                 if (isRed(child)) {
                     // Solução simples: Se o substituto é vermelho, pinta de preto
                     child->color = BLACK;
@@ -238,7 +241,7 @@ RBNode *rb_delete_rec(RBNode *root, int data, int *shortage) {
         // Encontra o sucessor (menor elemento da subárvore direita)
         RBNode *succ = root->link[1];
         while (succ->link[0] != NULL){
-          testes[iterAtual].iterRemovRB++;
+          
           succ = succ->link[0];
         }
           
@@ -257,6 +260,8 @@ RBNode *rb_delete_rec(RBNode *root, int data, int *shortage) {
 
     // Na volta da recursão: Se houver shortage vindo do filho, tentamos corrigir
     if (*shortage) {
+          testes[iterAtual].iterRemovRB++;
+
         root = fixDelete(root, dir, shortage);
     }
 

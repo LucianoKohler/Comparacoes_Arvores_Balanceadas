@@ -36,9 +36,16 @@ void percorreArvore(No* no, void (visita)(int chave)) {
     }
 }
 
-int pesquisaBinaria(No* no, int chave) {
+int pesquisaBinaria(ArvoreB* arv, No* no, int chave) {
     int inicio = 0, fim = no->total - 1, meio;
     while (inicio <= fim) {
+    if(arv->ordem == 1){
+        testes[iterAtual].iterAddB1++;
+    }else if(arv->ordem == 5){
+        testes[iterAtual].iterAddB5++;
+    }else if(arv->ordem == 10){
+        testes[iterAtual].iterAddB10++;
+    }
         meio = (inicio + fim) / 2;
         if (no->chaves[meio] == chave) {
             return meio; // encontrou
@@ -57,7 +64,7 @@ int localizaChave(ArvoreB* arvore, int chave) {
     while (no != NULL) {
         
 
-        int i = pesquisaBinaria(no, chave);
+        int i = pesquisaBinaria(arvore, no, chave);
         if (i < no->total && no->chaves[i] == chave) {
             return 1; // encontrou
         } else {
@@ -71,7 +78,7 @@ No* localizaNo(ArvoreB* arvore, int chave) {
     No *no = arvore->raiz;
 
     while (no != NULL) {
-        int i = pesquisaBinaria(no, chave);
+        int i = pesquisaBinaria(arvore, no, chave);
 
         if(arvore->ordem == 1){
             testes[iterAtual].iterAddB1++;
@@ -88,8 +95,8 @@ No* localizaNo(ArvoreB* arvore, int chave) {
     return NULL;
 }
 
-void adicionaChaveNo(No* no, No* direita, int chave) {
-    int i = pesquisaBinaria(no, chave);
+void adicionaChaveNo(ArvoreB* arv, No* no, No* direita, int chave) {
+    int i = pesquisaBinaria(arv, no, chave);
     for (int j = no->total - 1; j >= i; j--) {
         no->chaves[j + 1] = no->chaves[j];
         no->filhos[j + 2] = no->filhos[j + 1];
@@ -124,7 +131,7 @@ No* divideNo(ArvoreB* arvore, No* no) {
 }
 
 void adicionaChaveRecursivo(ArvoreB* arvore, No* no, No* novo, int chave) {
-    adicionaChaveNo(no, novo, chave);
+    adicionaChaveNo(arvore, no, novo, chave);
     if (transbordo(arvore, no)) {
         int promovido = no->chaves[arvore->ordem];
         No* novo_direita = divideNo(arvore, no);
@@ -134,7 +141,7 @@ void adicionaChaveRecursivo(ArvoreB* arvore, No* no, No* novo, int chave) {
             raiz->filhos[0] = no;
             no->pai = raiz;
             novo_direita->pai = raiz;
-            adicionaChaveNo(raiz, novo_direita, promovido);
+            adicionaChaveNo(arvore, raiz, novo_direita, promovido);
             arvore->raiz = raiz;
         } else {
             adicionaChaveRecursivo(arvore, no->pai, novo_direita, promovido);
@@ -143,6 +150,7 @@ void adicionaChaveRecursivo(ArvoreB* arvore, No* no, No* novo, int chave) {
 }
 
 void adicionaChave(ArvoreB* arvore, int chave) {
+    
     No* no = localizaNo(arvore, chave);
     adicionaChaveRecursivo(arvore, no, NULL, chave);
 }
@@ -168,9 +176,18 @@ void removeChaveDoNo(No* no, int idx) {
     no->total--;
 }
 
-int buscaChave(No* no, int chave) {
+int buscaChave(ArvoreB* arv, No* no, int chave) {
     int i = 0;
-    while (i < no->total && chave > no->chaves[i]) i++;
+    while (i < no->total && chave > no->chaves[i]) {
+        i++;
+    if(arv->ordem == 1){
+        testes[iterAtual].iterRemovB1++;
+    }else if(arv->ordem == 5){
+        testes[iterAtual].iterRemovB5++;
+    }else if(arv->ordem == 10){
+        testes[iterAtual].iterRemovB10++;
+    }
+    }
     return i;
 }
 
@@ -269,63 +286,35 @@ void balanceiaRemocao(ArvoreB* arv, No* no, int idx) {
 
     // Caso 3 — Merge inevitável
     if (idx < no->total){
-        if(arv->ordem == 1){
-            testes[iterAtual].iterRemovB1++;
-        }else if(arv->ordem == 5){
-            testes[iterAtual].iterRemovB5++;
-        }else if(arv->ordem == 10){
-            testes[iterAtual].iterRemovB10++;
-        }
         mergeNos(arv, no, idx);
     }
     else{
-        if(arv->ordem == 1){
-            testes[iterAtual].iterRemovB1++;
-        }else if(arv->ordem == 5){
-            testes[iterAtual].iterRemovB5++;
-        }else if(arv->ordem == 10){
-            testes[iterAtual].iterRemovB10++;
-        }
         mergeNos(arv, no, idx - 1);
     }
 }
 
 void removeRec(ArvoreB* arv, No* no, int chave) {
-    if(arv->ordem == 1){
-        testes[iterAtual].iterRemovB1++;
-    }else if(arv->ordem == 5){
-        testes[iterAtual].iterRemovB5++;
-    }else if(arv->ordem == 10){
-        testes[iterAtual].iterRemovB10++;
-    }
+        if(arv->ordem == 1){
+            testes[iterAtual].iterRemovB1++;
+        }else if(arv->ordem == 5){
+            testes[iterAtual].iterRemovB5++;
+        }else if(arv->ordem == 10){
+            testes[iterAtual].iterRemovB10++;
+        }
 
-    int idx = buscaChave(no, chave);
+    int idx = buscaChave(arv, no, chave);
 
     // Caso A — chave está neste nó
     if (idx < no->total && no->chaves[idx] == chave) {
 
         // A1 — Nó folha
         if (no->filhos[0] == NULL) {
-            if(arv->ordem == 1){
-                testes[iterAtual].iterRemovB1++;
-            }else if(arv->ordem == 5){
-                testes[iterAtual].iterRemovB5++;
-            }else if(arv->ordem == 10){
-                testes[iterAtual].iterRemovB10++;
-            }
             removeChaveDoNo(no, idx);
             return;
         }   
 
         // A2 — Nó interno: usar antecessor
         No* pred = maiorFilho(no->filhos[idx]);
-        if(arv->ordem == 1){
-            testes[iterAtual].iterRemovB1++;
-        }else if(arv->ordem == 5){
-            testes[iterAtual].iterRemovB5++;
-        }else if(arv->ordem == 10){
-            testes[iterAtual].iterRemovB10++;
-        }
 
         int k = pred->chaves[pred->total - 1];
         no->chaves[idx] = k;
@@ -341,21 +330,12 @@ void removeRec(ArvoreB* arv, No* no, int chave) {
         if (no->filhos[idx]->total == arv->ordem)
             balanceiaRemocao(arv, no, idx);
 
-        removeRec(arv, no->filhos[buscaChave(no, chave)], chave);
+        removeRec(arv, no->filhos[buscaChave(arv, no, chave)], chave);
     }
 }
 
 void removeB(ArvoreB* arv, int chave) {
     if (!arv->raiz) return;
-
-    if(arv->ordem == 1){
-        testes[iterAtual].iterRemovB1++;
-    }else if(arv->ordem == 5){
-        testes[iterAtual].iterRemovB5++;
-    }else if(arv->ordem == 10){
-        testes[iterAtual].iterRemovB10++;
-    }
-
 
     removeRec(arv, arv->raiz, chave);
 

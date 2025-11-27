@@ -122,6 +122,7 @@ NodeAVL* insertAVL(NodeAVL* root, int data){
         }
         root = new_node;
     } else if (data > root->data) {
+        testes[iterAtual].iterAddAVL++;
         // insert the new node to the right
         root->right = insertAVL(root->right, data);
         // tree is unbalanced, then rotate it
@@ -134,6 +135,8 @@ NodeAVL* insertAVL(NodeAVL* root, int data){
             }
         }
     } else{
+        testes[iterAtual].iterAddAVL++;
+
         // insert the new node to the left
         root->left = insertAVL(root->left, data);
         // tree is unbalanced, then rotate it
@@ -165,6 +168,7 @@ NodeAVL* deleteAVL(NodeAVL *root, int x) {
     } 
     
     if (x > root->data) {
+        testes[iterAtual].iterRemovAVL++;
 
         root->right = deleteAVL(root->right, x);
 
@@ -177,6 +181,8 @@ NodeAVL* deleteAVL(NodeAVL *root, int x) {
             }
         }
     } else if (x < root->data) {
+        testes[iterAtual].iterRemovAVL++;
+
         root->left = deleteAVL(root->left, x);
         
         if (balance_factorAVL(root) == -2) {
@@ -188,6 +194,8 @@ NodeAVL* deleteAVL(NodeAVL *root, int x) {
             }
         }
     } else {
+        testes[iterAtual].iterRemovAVL++;
+
         if (root->right != NULL){ 
             temp = root->right;
             while (temp->left != NULL) temp = temp->left;

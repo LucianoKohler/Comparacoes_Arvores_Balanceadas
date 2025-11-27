@@ -1,20 +1,8 @@
-// PERGUNTAR SE A IMPLEMENTAÇÃO PODE VIR DE OUTROS DEVS (geeks for geeks)
-
-/*
-|--------------------|
-| Cursor Parking Lot |
-|--------------------|
-|                    |
----------------------|
-*/
-
-
 #include "header.h"
+
 // Inclusão das estruturas
 #include "estruturas/AVL.c"
 #include "estruturas/RB.c"
-// #include "estruturas/B1.c"
-// #include "estruturas/B5.c"
 #include "estruturas/B.c"
 
 #include <stdio.h>
@@ -35,6 +23,7 @@ int main(){
     srand(time(NULL));
     printarCabecalho();
     for(iterAtual = 0; iterAtual < 10; iterAtual++){
+
         // Setup
         int tamConjunto = tamanhoConjuntos[iterAtual];
         testes[iterAtual].iterAddAVL = 0;
@@ -72,7 +61,7 @@ int main(){
         }
 
         for(int i = 0; i < tamConjunto; i++){
-            removeB(arv1, conjValoresAleatorios[i]);
+            // removeB(arv1, conjValoresAleatorios[i]);
         }
 
         // 3: Árvore B de ordem 5
@@ -82,7 +71,7 @@ int main(){
         }
 
         for(int i = 0; i < tamConjunto; i++){
-            removeB(arv5, conjValoresAleatorios[i]);
+            // removeB(arv5, conjValoresAleatorios[i]);
         }
 
         // 4: Árvore B de ordem 10
@@ -92,7 +81,7 @@ int main(){
         }
     
         for(int i = 0; i < tamConjunto; i++){
-            removeB(arv10, conjValoresAleatorios[i]);
+            // removeB(arv10, conjValoresAleatorios[i]);
         }
 
         // 5: Árvore Rubro-Negra
@@ -105,6 +94,7 @@ int main(){
             remover(&raizRB, conjValoresAleatorios[i]);
         }
 
+
         printf("|%8d|%10lld|%10lld|%10lld|%10lld|%10lld|   |%8d|%10lld|%10lld|%10lld|%10lld|%10lld|\n", 
             tamConjunto,
             testes[iterAtual].iterAddAVL,
@@ -114,9 +104,9 @@ int main(){
             testes[iterAtual].iterAddRB,
             tamConjunto,
             testes[iterAtual].iterRemovAVL,
-            testes[iterAtual].iterRemovB1,
-            testes[iterAtual].iterRemovB5,
             testes[iterAtual].iterRemovB10,
+            testes[iterAtual].iterRemovB5,
+            testes[iterAtual].iterRemovB1,
             testes[iterAtual].iterRemovRB);
         printf("|--------|----------|----------|----------|----------|----------|   |--------|----------|----------|----------|----------|----------|\n");
     }
