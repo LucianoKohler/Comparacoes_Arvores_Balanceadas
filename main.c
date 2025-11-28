@@ -10,7 +10,7 @@
 #include <time.h>
 
 estatisticasConjunto testes[10];
-int tamanhoConjuntos[10] = {1, 10, 50, 100, 1000, 6000, 7000, 8000, 9000, 10000 };
+int tamanhoConjuntos[10] = {1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000 };
 int iterAtual = 0;
 
 void printarCabecalho(){
@@ -58,31 +58,31 @@ int main(){
         // 2: Árvore B de ordem 1
         ArvoreB* arvB1 = criaArvoreB(1);
         for(int i = 0; i < tamConjunto; i++){
-            adicionaChaveB(arvB1, conjValoresAleatorios[i], &testes[i].iterAddB1);
+            adicionaChaveB(arvB1, conjValoresAleatorios[i], &testes[iterAtual].iterAddB1);
         }
 
         for(int i = 0; i < tamConjunto; i++){
-            remocaoChaveB(arvB1, arvB1->raiz, conjValoresAleatorios[i], &testes[i].iterRemovB1);
+            remocaoChaveB(arvB1, arvB1->raiz, conjValoresAleatorios[i], &testes[iterAtual].iterRemovB1);
         }
 
         // // 3: Árvore B de ordem 5
         ArvoreB* arvB5 = criaArvoreB(5);
         for(int i = 0; i < tamConjunto; i++){
-            adicionaChaveB(arvB5, conjValoresAleatorios[i], &testes[i].iterAddB5);
+            adicionaChaveB(arvB5, conjValoresAleatorios[i], &testes[iterAtual].iterAddB5);
         }
 
         for(int i = 0; i < tamConjunto; i++){
-            remocaoChaveB(arvB5, arvB5->raiz, conjValoresAleatorios[i], &testes[i].iterRemovB5);
+            remocaoChaveB(arvB5, arvB5->raiz, conjValoresAleatorios[i], &testes[iterAtual].iterRemovB5);
         }
 
         // // 4: Árvore B de ordem 10
         ArvoreB* arvB10 = criaArvoreB(10);
         for(int i = 0; i < tamConjunto; i++){
-            adicionaChaveB(arvB10, conjValoresAleatorios[i], &testes[i].iterAddB10);
+            adicionaChaveB(arvB10, conjValoresAleatorios[i], &testes[iterAtual].iterAddB10);
         }
 
         for(int i = 0; i < tamConjunto; i++){
-            remocaoChaveB(arvB10, arvB10->raiz, conjValoresAleatorios[i], &testes[i].iterRemovB10);
+            remocaoChaveB(arvB10, arvB10->raiz, conjValoresAleatorios[i], &testes[iterAtual].iterRemovB10);
         }
 
         // 5: Árvore Rubro-Negra

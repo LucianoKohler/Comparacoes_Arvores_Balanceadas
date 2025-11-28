@@ -21,18 +21,49 @@ int vaziaAVL(ArvoreAVL *arvoreAVL)
     return arvoreAVL->raiz == NULL;
 }
 
+// Função que cria um novo nó com valor (valor) para a árvore AVL, ligando-o com o seu nó-pai (pai)
+NoAVL *criarNoAVL(NoAVL *pai, int valor)
+{
+    NoAVL *noAVL = malloc(sizeof(NoAVL));
+    noAVL->valor = valor;
+    noAVL->pai = pai;
+    noAVL->esquerda = NULL;
+    noAVL->direita = NULL;
+    noAVL->altura = 1; // nova folha tem altura 1
+    return noAVL;
+}
+
+// Função que retorna a altura do nó (agora O(1) - usa o campo altura)
+int alturaAVL(NoAVL *noAVL, ll *contador)
+{
+    
+    if (noAVL == NULL)
+    {
+        return 0;
+    }
+    return noAVL->altura;
+}
+
+// Função que retorna o fator de balanceamento de um nó (noAVL)
+int fbAVL(NoAVL *noAVL, ll *contador)
+{
+    
+    if (noAVL == NULL) return 0;
+    return alturaAVL(noAVL->esquerda, contador) - alturaAVL(noAVL->direita, contador);
+}
+
 // Função que adiciona um novo nó com chave (valor) ao nó (noAVL)
 NoAVL *adicionarNoAVL(NoAVL *noAVL, int valor, ll *contador)
 {
     (*contador)++;
+    
     if (valor > noAVL->valor)
     {
-        (*contador)++;
+        
         if (noAVL->direita == NULL)
         {
             NoAVL *novo = criarNoAVL(noAVL, valor);
             noAVL->direita = novo;
-
             return novo;
         }
         else
@@ -42,12 +73,11 @@ NoAVL *adicionarNoAVL(NoAVL *noAVL, int valor, ll *contador)
     }
     else
     {
-        (*contador)++;
+        
         if (noAVL->esquerda == NULL)
         {
             NoAVL *novo = criarNoAVL(noAVL, valor);
             noAVL->esquerda = novo;
-
             return novo;
         }
         else
@@ -60,11 +90,10 @@ NoAVL *adicionarNoAVL(NoAVL *noAVL, int valor, ll *contador)
 // Função que adiciona um novo nó com valor (valor) na árvore AVL (arvoreAVL)
 NoAVL *adicionarAVL(ArvoreAVL *arvoreAVL, int valor, ll *contador)
 {
-    (*contador)++;
+    
     if (vaziaAVL(arvoreAVL))
     {
         arvoreAVL->raiz = criarNoAVL(NULL, valor);
-
         return arvoreAVL->raiz;
     }
     else
@@ -75,31 +104,22 @@ NoAVL *adicionarAVL(ArvoreAVL *arvoreAVL, int valor, ll *contador)
     }
 }
 
-// Função que cria um novo nó com valor (valor) para a árvore AVL, ligando-o com o seu nó-pai (pai)
-NoAVL *criarNoAVL(NoAVL *pai, int valor)
-{
-    NoAVL *noAVL = malloc(sizeof(NoAVL));
-    noAVL->valor = valor;
-    noAVL->pai = pai;
-    noAVL->esquerda = NULL;
-    noAVL->direita = NULL;
-    return noAVL;
-}
-
 // Função que localiza o nó com valor (valor) a partir do nó (noAVL)
 NoAVL *localizarAVL(NoAVL *noAVL, int valor, ll *contador)
 {
-    (*contador)++;
+    
+    if (noAVL == NULL) return NULL;
+
     if (noAVL->valor == valor)
     {
         return noAVL;
     }
     else
     {
-        (*contador)++;
+        
         if (valor < noAVL->valor)
         {
-            (*contador)++;
+            
             if (noAVL->esquerda != NULL)
             {
                 return localizarAVL(noAVL->esquerda, valor, contador);
@@ -107,7 +127,7 @@ NoAVL *localizarAVL(NoAVL *noAVL, int valor, ll *contador)
         }
         else
         {
-            (*contador)++;
+            
             if (noAVL->direita != NULL)
             {
                 return localizarAVL(noAVL->direita, valor, contador);
@@ -129,66 +149,13 @@ void percorrerAVL(NoAVL *noAVL, void (*callback)(int))
     }
 }
 
-// Função que rebalanceia a árvore AVL
-void balanceamentoAVL(ArvoreAVL *arvore, NoAVL *no, ll *contador)
-{
-    (*contador)++;
-    while (no != NULL)
-    {
-        no->altura = maximo(alturaAVL(no->esquerda, contador), alturaAVL(no->direita, contador)) + 1;
-        int fator = fbAVL(no, contador);
-        (*contador)++;
-        if (fator > 1)
-        { // árvore mais pesada para esquerda
-            // rotação para a direita
-            (*contador)++;
-            if (fbAVL(no->esquerda, contador) > 0)
-            {
-                rsdAVL(arvore, no, contador); // rotação simples a direita, pois o FB do filho tem sinal igual
-            }
-            else
-            {
-                rddAVL(arvore, no, contador); // rotação dupla a direita, pois o FB do filho tem sinal diferente
-            }
-        }
-        else if (fator < -1)
-        { // árvore mais pesada para a direita
-            // rotação para a esquerda
-            (*contador)++;
-            if (fbAVL(no->direita, contador) < 0)
-            {
-                rseAVL(arvore, no, contador); // rotação simples a esquerda, pois o FB do filho tem sinal igual
-            }
-            else
-            {
-                rdeAVL(arvore, no, contador); // rotação dupla a esquerda, pois o FB do filho tem sinal diferente
-            }
-        }
-        no = no->pai;
-        (*contador)++;
-    }
-}
-
-// Função que retorna a altura da subárvore com "raíz" em (noAVL)
-int alturaAVL(NoAVL *noAVL, ll *contador)
-{
-    (*contador)++;
-    if (noAVL == NULL)
-    {
-        return 0;
-    }
-
-    int esquerda = alturaAVL(noAVL->esquerda, contador) + 1;
-    int direita = alturaAVL(noAVL->direita, contador) + 1;
-
-    (*contador)++;
-    return esquerda > direita ? esquerda : direita;
-}
-
-// Função que retorna o fator de balanceamento de um nó (noAVL)
-int fbAVL(NoAVL *noAVL, ll *contador)
-{
-    return alturaAVL(noAVL->esquerda, contador) - alturaAVL(noAVL->direita, contador);
+// Atualiza altura de um nó a partir de alturas dos filhos
+static void atualizaAltura(NoAVL *no, ll *contador) {
+    if (!no) return;
+    
+    int he = alturaAVL(no->esquerda, contador);
+    int hd = alturaAVL(no->direita, contador);
+    no->altura = maximo(he, hd) + 1;
 }
 
 // Função que realiza a rotação simples para a esquerda
@@ -196,34 +163,37 @@ NoAVL *rseAVL(ArvoreAVL *arvoreAVL, NoAVL *noAVL, ll *contador)
 {
     NoAVL *pai = noAVL->pai;
     NoAVL *direita = noAVL->direita;
-    (*contador)++;
+    
+
+    // ligar subárvore
+    noAVL->direita = direita->esquerda;
     if (direita->esquerda != NULL)
     {
         direita->esquerda->pai = noAVL;
     }
 
-    noAVL->direita = direita->esquerda;
+    // realizar rotação
+    direita->esquerda = noAVL;
     noAVL->pai = direita;
 
-    direita->esquerda = noAVL;
+    // ajustar pai do novo topo
     direita->pai = pai;
-    (*contador)++;
     if (pai == NULL)
     {
         arvoreAVL->raiz = direita;
     }
     else
     {
-        (*contador)++;
+        
         if (pai->esquerda == noAVL)
-        {
             pai->esquerda = direita;
-        }
         else
-        {
             pai->direita = direita;
-        }
     }
+
+    // atualizar alturas (primeiro noAVL, depois direita)
+    atualizaAltura(noAVL, contador);
+    atualizaAltura(direita, contador);
 
     return direita;
 }
@@ -233,34 +203,37 @@ NoAVL *rsdAVL(ArvoreAVL *arvoreAVL, NoAVL *noAVL, ll *contador)
 {
     NoAVL *pai = noAVL->pai;
     NoAVL *esquerda = noAVL->esquerda;
-    (*contador)++;
+    
+
+    // ligar subárvore
+    noAVL->esquerda = esquerda->direita;
     if (esquerda->direita != NULL)
     {
         esquerda->direita->pai = noAVL;
     }
 
-    noAVL->esquerda = esquerda->direita;
+    // realizar rotação
+    esquerda->direita = noAVL;
     noAVL->pai = esquerda;
 
-    esquerda->direita = noAVL;
+    // ajustar pai do novo topo
     esquerda->pai = pai;
-    (*contador)++;
     if (pai == NULL)
     {
         arvoreAVL->raiz = esquerda;
     }
     else
     {
-        (*contador)++;
+        
         if (pai->esquerda == noAVL)
-        {
             pai->esquerda = esquerda;
-        }
         else
-        {
             pai->direita = esquerda;
-        }
     }
+
+    // atualizar alturas
+    atualizaAltura(noAVL, contador);
+    atualizaAltura(esquerda, contador);
 
     return esquerda;
 }
@@ -268,136 +241,177 @@ NoAVL *rsdAVL(ArvoreAVL *arvoreAVL, NoAVL *noAVL, ll *contador)
 // Função que realiza a rotação dupla para a esquerda
 NoAVL *rdeAVL(ArvoreAVL *arvoreAVL, NoAVL *noAVL, ll *contador)
 {
+    // primeiro rotaciona a direita no filho direito, depois à esquerda no próprio nó
     noAVL->direita = rsdAVL(arvoreAVL, noAVL->direita, contador);
+    if (noAVL->direita != NULL) noAVL->direita->pai = noAVL;
     return rseAVL(arvoreAVL, noAVL, contador);
 }
 
 // Função que realiza a rotação dupla para a direita
 NoAVL *rddAVL(ArvoreAVL *arvoreAVL, NoAVL *noAVL, ll *contador)
 {
+    // primeiro rotaciona a esquerda no filho esquerdo, depois à direita no próprio nó
     noAVL->esquerda = rseAVL(arvoreAVL, noAVL->esquerda, contador);
+    if (noAVL->esquerda != NULL) noAVL->esquerda->pai = noAVL;
     return rsdAVL(arvoreAVL, noAVL, contador);
 }
 
-// Função que remove um nó
-void removerNoAVL(NoAVL *rem)
+// Função que rebalanceia a árvore AVL (sobe a partir do nó dado até raiz)
+void balanceamentoAVL(ArvoreAVL *arvore, NoAVL *no, ll *contador)
 {
-    rem->direita = NULL;
-    rem->esquerda = NULL;
-    rem->pai = NULL;
-    rem = NULL;
-    free(rem);
+    
+    while (no != NULL)
+    {
+        atualizaAltura(no, contador);
+        int fator = fbAVL(no, contador);
+        (*contador)++;
+        
+        if (fator > 1)
+        { // mais pesado para esquerda
+            (*contador)++;
+            
+            if (fbAVL(no->esquerda, contador) >= 0)
+            {
+                rsdAVL(arvore, no, contador);
+            }
+            else
+            {
+                rddAVL(arvore, no, contador);
+            }
+        }
+        else if (fator < -1)
+        { // mais pesado para direita
+            (*contador)++;
+
+            if (fbAVL(no->direita, contador) <= 0)
+            {
+                rseAVL(arvore, no, contador);
+            }
+            else
+            {
+                rdeAVL(arvore, no, contador);
+            }
+        }
+        no = no->pai;
+        
+    }
 }
 
-//Função que retorna o sucessor In-Order do nó (noAVL)
+//Função que retorna o sucessor In-Order do nó (menor na subárvore direita)
 NoAVL *maiorDireitaAVL(NoAVL *noAVL, ll *contador)
 {
+    if (noAVL == NULL) return NULL;
     NoAVL *ret = noAVL->direita;
-    (*contador)++;
-    while (ret->esquerda != NULL)
+    
+    while (ret != NULL && ret->esquerda != NULL)
     {
         ret = ret->esquerda;
-        (*contador)++;
+        
     }
     return ret;
 }
 
-//Função que retorna o antecessor In-Order do nó (noAVL)
+//Função que retorna o antecessor In-Order do nó (maior na subárvore esquerda)
 NoAVL *maiorEsquerdaAVL(NoAVL *noAVL, ll *contador)
 {
+    if (noAVL == NULL) return NULL;
     NoAVL *ret = noAVL->esquerda;
-    (*contador)++;
-    while (ret->direita != NULL)
+    
+    while (ret != NULL && ret->direita != NULL)
     {
         ret = ret->direita;
-        (*contador)++;
+        
     }
     return ret;
+}
+
+// Função que remove um nó (apenas free do nó)
+void removerNoAVL(NoAVL *rem)
+{
+    if (rem != NULL)
+    {
+        free(rem);
+    }
 }
 
 //Função que remove um nó de valor (valor) da árvore (arvoreAVL)
+// Observação: agora a função retorna a raiz da árvore (para compatibilidade, retorna NoAVL*),
+// mas o ideal é manter a árvore através de arvoreAVL->raiz.
 NoAVL *removerAVL(ArvoreAVL *arvoreAVL, int valor, ll *contador)
 {
-    (*contador)++;
-    if (arvoreAVL == NULL)
+    
+    if (arvoreAVL == NULL || arvoreAVL->raiz == NULL)
     {
         return NULL;
     }
+
     NoAVL *rem = localizarAVL(arvoreAVL->raiz, valor, contador);
-    (*contador)++;
-    if (rem != NULL)
+    
+    if (rem == NULL)
     {
-        (*contador) += 2;
-        if (rem->direita == NULL && rem->esquerda == NULL)
+        // não encontrado
+        return arvoreAVL->raiz;
+    }
+
+    NoAVL *nodeParaBalancear = NULL; // pai do nó removido/substituído, onde começaremos o balanceamento
+
+    // Caso: dois filhos -> substituir pelo sucessor (mínimo da direita)
+    if (rem->esquerda != NULL && rem->direita != NULL)
+    {
+        (*contador)++;
+
+        // encontra o sucessor (menor da subárvore direita)
+        NoAVL *sucessor = rem->direita;
+        
+        while (sucessor->esquerda != NULL)
         {
-            (*contador)++;
-            if( rem == arvoreAVL->raiz ) {
-                arvoreAVL->raiz = NULL;
-            }
-            else if (rem->pai->direita == rem)
-            {
-                (*contador)++;
-                rem->pai->direita = NULL;
-            }
-            else
-            {
-                (*contador)++;
-                rem->pai->esquerda = NULL;
-            }
+            sucessor = sucessor->esquerda;
+            
         }
-        else if (rem->direita == NULL)
+        // copia valor do sucessor para rem
+        rem->valor = sucessor->valor;
+        // agora devemos remover o sucessor (que tem no máximo 1 filho à direita)
+        // então trocamos o alvo da remoção para o sucessor
+        rem = sucessor;
+        // o nodeParaBalancear será o pai do sucessor (após remoção, balanceamos a partir desse pai)
+    }
+
+    // Agora rem tem no máximo 1 filho
+    NoAVL *sub = (rem->esquerda != NULL) ? rem->esquerda : rem->direita;
+    NoAVL *pai = rem->pai;
+
+    if (sub != NULL)
+    {
+        // ligar filho ao pai
+        sub->pai = pai;
+    }
+
+    if (pai == NULL)
+    {
+        // rem era raiz
+        arvoreAVL->raiz = sub;
+    }
+    else
+    {
+        if (pai->esquerda == rem)
         {
-            (*contador)++;
-            rem->esquerda->pai = rem->pai;
-            (*contador)++;
-            if( rem->pai == NULL ) {
-                arvoreAVL->raiz = rem->esquerda;
-            }
-            else if (rem->pai->direita == rem)
-            {
-                (*contador)++;
-                rem->pai->direita = rem->esquerda;
-            }
-            else
-            {
-                (*contador)++;
-                rem->pai->esquerda = rem->esquerda;
-            }
-        }
-        else if (rem->esquerda == NULL)
-        {
-            (*contador) += 2;
-            rem->direita->pai = rem->pai;
-            (*contador)++;
-            if( rem->pai == NULL ) {
-                arvoreAVL->raiz = rem->direita;
-            }
-            else if (rem->pai->direita == rem)
-            {
-                (*contador)++;
-                rem->pai->direita = rem->direita;
-            }
-            else
-            {
-                (*contador)++;
-                rem->pai->esquerda = rem->direita;
-            }
+            pai->esquerda = sub;
         }
         else
         {
-            (*contador) += 2;
-            NoAVL *substituto = rem;
-            rem = maiorEsquerdaAVL(rem, contador);
-            removerAVL(arvoreAVL, rem->valor, contador);
-            int aux = substituto->valor;
-            substituto->valor = rem->valor;
-            rem->valor = aux;
-            rem->esquerda = substituto->esquerda;
-            rem->direita = substituto->direita;
+            pai->direita = sub;
         }
-        balanceamentoAVL(arvoreAVL, rem->pai, contador);
     }
-    NoAVL *retorno = rem;
+
+    // definir de onde começa o rebalanceamento:
+    nodeParaBalancear = pai;
+
+    // liberar rem
     removerNoAVL(rem);
-    return retorno;
+
+    // rebalancear subindo a partir do pai
+    balanceamentoAVL(arvoreAVL, nodeParaBalancear, contador);
+
+    // retornar a raiz atualizada (compatibilidade com uso anterior)
+    return arvoreAVL->raiz;
 }

@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 # Lê o CSV (separado por vírgula)
 df = pd.read_csv("dataInsert.csv", header=None);
 
-linhas = ["AVL", "B ord. 1", "B ord. 5", "B ord. 10", "Rubro-Negra"]
-colunas = [1, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000]
+linhas = ["AVL"]
+colunas = [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000]
 
 df.index = linhas
 df.columns = colunas
