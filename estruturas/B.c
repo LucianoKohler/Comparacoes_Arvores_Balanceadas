@@ -49,11 +49,11 @@ void percorreArvoreB(NoB *no, void (*visita)(int chave))
 int localizaChaveB(ArvoreB *arvore, NoB *raiz, int chave, ll *contador)
 {
     NoB *no = raiz;
-    (*contador)++;
+    
     while (no != NULL)
     {
         int i = pesquisaBinariaB(no, chave, contador);
-        (*contador)++;
+        
         if (i < no->total && no->chaves[i] == chave)
         {
             return 1; // encontrou
@@ -62,34 +62,35 @@ int localizaChaveB(ArvoreB *arvore, NoB *raiz, int chave, ll *contador)
         {
             no = no->filhos[i];
         }
-        (*contador)++;
+        
     }
     return 0; // não encontrou
 }
 
 int pesquisaBinariaB(NoB *no, int chave, ll *contador)
 {
-    int inicio = 0, fim = no->total - 1, meio;
     (*contador)++;
+    int inicio = 0, fim = no->total - 1, meio;
+    
     while (inicio <= fim)
     {
         meio = (inicio + fim) / 2;
-        (*contador)++;
+        
         if (no->chaves[meio] == chave)
         {
             return meio; // encontrou
         }
         else if (no->chaves[meio] > chave)
         {
-            (*contador)++;
+            
             fim = meio - 1;
         }
         else
         {
-            (*contador)++;
+            
             inicio = meio + 1;
         }
-        (*contador)++;
+        
     }
     return inicio; // posição de inserção (primeiro >= chave)
 }
@@ -97,17 +98,18 @@ int pesquisaBinariaB(NoB *no, int chave, ll *contador)
 NoB *localizaNoB(ArvoreB *arvore, NoB *raiz, int chave, ll *contador)
 {
     NoB *no = raiz;
-    (*contador)++;
+    
     while (no != NULL)
     {
-        int i = pesquisaBinariaB(no, chave, contador);
         (*contador)++;
+        int i = pesquisaBinariaB(no, chave, contador);
+        
         // se for folha, retornar o nó para inserção; caso contrário descer pelo filho apropriado
         if (no->filhos[i] == NULL)
             return no;
         else
             no = no->filhos[i];
-        (*contador)++;
+        
     }
     return NULL; // não encontrado (árvore vazia)
 }
@@ -117,13 +119,13 @@ NoB *localizaNoB(ArvoreB *arvore, NoB *raiz, int chave, ll *contador)
 void adicionaChaveNoB(NoB *no, NoB *direita, int chave, ll *contador)
 {
     int i = pesquisaBinariaB(no, chave, contador);
-    (*contador)++;
+    
     // shift keys and children to make space at i
     for (int j = no->total - 1; j >= i; j--)
     {
         no->chaves[j + 1] = no->chaves[j];
         no->filhos[j + 2] = no->filhos[j + 1];
-        (*contador)++;
+        
     }
     // insert key and right child
     no->chaves[i] = chave;
@@ -145,12 +147,13 @@ int transbordoB(ArvoreB *arvore, NoB *no)
 */
 NoB *divideNoB(ArvoreB *arvore, NoB *no, ll *contador)
 {
+    (*contador)++;
     int t = arvore->ordem;
     int old_total = no->total;
     int meio = t; // promover no->chaves[t]
     NoB *novo = criaNoB(arvore);
     novo->pai = no->pai;
-    (*contador)++;
+    
 
     // copiar chaves do meio+1 .. old_total-1 para novo->chaves[0..]
     int k = 0;
@@ -158,7 +161,7 @@ NoB *divideNoB(ArvoreB *arvore, NoB *no, ll *contador)
     {
         novo->chaves[k] = no->chaves[i];
         novo->total++;
-        (*contador)++;
+        
         k++;
     }
 
@@ -169,7 +172,7 @@ NoB *divideNoB(ArvoreB *arvore, NoB *no, ll *contador)
         novo->filhos[fk] = no->filhos[i];
         if (novo->filhos[fk] != NULL)
             novo->filhos[fk]->pai = novo;
-        (*contador)++;
+        
         fk++;
     }
 
@@ -212,13 +215,13 @@ void adicionaChaveRecursivoB(ArvoreB *arvore, NoB *no, NoB *novo, int chave, ll 
         adicionaChaveNoB(no, NULL, chave, contador);
     }
 
-    (*contador)++;
+    
     if (transbordoB(arvore, no))
     {
         // promove chaves: dividir e promover a chave no índice t (ordem)
         int promovido = no->chaves[arvore->ordem];
         NoB *novoNo = divideNoB(arvore, no, contador);
-        (*contador)++;
+        
 
         if (no->pai == NULL)
         {
@@ -245,11 +248,11 @@ void adicionaChaveRecursivoB(ArvoreB *arvore, NoB *no, NoB *novo, int chave, ll 
 int sucessorChaveB(ArvoreB *arvore, NoB *no, int index, ll *contador)
 {
     NoB *aux = no->filhos[index + 1];
-    (*contador)++;
+    
     while (aux != NULL && aux->filhos[0] != NULL)
     {
         aux = aux->filhos[0]; // Desce para o filho mais à esquerda
-        (*contador)++;
+        
     }
     return aux->chaves[0]; // Retorna a primeira chave do nó mais à esquerda
 }
@@ -257,11 +260,11 @@ int sucessorChaveB(ArvoreB *arvore, NoB *no, int index, ll *contador)
 NoB *sucessorNoB(ArvoreB *arvore, NoB *no, int index, ll *contador)
 {
     NoB *aux = no->filhos[index + 1];
-    (*contador)++;
+    
     while (aux != NULL && aux->filhos[0] != NULL)
     {
         aux = aux->filhos[0];
-        (*contador)++;
+        
     }
     return aux; // Retorna o nó que contém o sucessor
 }
@@ -269,11 +272,11 @@ NoB *sucessorNoB(ArvoreB *arvore, NoB *no, int index, ll *contador)
 int antecessorChaveB(ArvoreB *arvore, NoB *no, int index, ll *contador)
 {
     NoB *aux = no->filhos[index];
-    (*contador)++;
+    
     while (aux != NULL && aux->filhos[aux->total] != NULL)
     {
         aux = aux->filhos[aux->total]; // Desce para o filho mais à direita
-        (*contador)++;
+        
     }
     return aux->chaves[aux->total - 1]; // Retorna a última chave do nó mais à direita
 }
@@ -281,31 +284,31 @@ int antecessorChaveB(ArvoreB *arvore, NoB *no, int index, ll *contador)
 NoB *antecessorNoB(ArvoreB *arvore, NoB *no, int index, ll *contador)
 {
     NoB *aux = no->filhos[index];
-    (*contador)++;
+    
     while (aux != NULL && aux->filhos[aux->total] != NULL)
     {
         aux = aux->filhos[aux->total];
-        (*contador)++;
+        
     }
     return aux; // Retorna o nó que contém o antecessor
 }
 
 NoB *irmaoMaior(NoB *no, int index, ll *contador)
 {
-    (*contador)++;
+    
     if (index == 0)
     {
         return no->filhos[index + 1];
     }
     else if (index == no->total)
     {
-        (*contador)++;
+        
         return no->filhos[index - 1];
     }
     else
     {
-        (*contador)++;
-        (*contador)++;
+        
+        
         // escolhe o irmão com mais chaves entre os dois adjacentes quando existem ambos
         NoB *esq = no->filhos[index - 1];
         NoB *dir = no->filhos[index + 1];
@@ -332,26 +335,26 @@ void merge(NoB *resultado, NoB *excluido, int chavePai, ll *contador)
     resultado->total++;
 
     // Move as chaves do nó excluído para o nó resultante
-    (*contador)++;
+    
     for (int i = 0; i < excluido->total; i++)
     {
         resultado->chaves[resultado->total] = excluido->chaves[i];
         resultado->total++;
-        (*contador)++;
+        
     }
 
     // Move os filhos do nó excluído para o nó resultante
-    (*contador)++;
+    
     for (int i = 0; i <= excluido->total; i++)
     {
-        (*contador)++;
+        
         if (excluido->filhos[i] != NULL)
         {
             // posição correta para adicionar filho: (resultado->total - excluido->total) + i
             int pos = resultado->total - excluido->total + i;
             resultado->filhos[pos] = excluido->filhos[i];
             resultado->filhos[pos]->pai = resultado;
-            (*contador)++;
+            
         }
     }
 }
@@ -360,19 +363,19 @@ void merge(NoB *resultado, NoB *excluido, int chavePai, ll *contador)
 void mergeEspelhado(NoB *resultado, NoB *excluido, int chavePai, ll *contador)
 {
     // Desloca as chaves existentes no nó resultado para dar espaço
-    (*contador)++;
+    
     for (int i = resultado->total - 1; i >= 0; i--)
     {
         resultado->chaves[i + excluido->total + 1] = resultado->chaves[i];
-        (*contador)++;
+        
     }
 
     // Adiciona as chaves do nó excluído no início do nó resultado
-    (*contador)++;
+    
     for (int i = 0; i < excluido->total; i++)
     {
         resultado->chaves[i] = excluido->chaves[i];
-        (*contador)++;
+        
     }
 
     // Adiciona a chave do pai após as chaves do excluído
@@ -380,23 +383,23 @@ void mergeEspelhado(NoB *resultado, NoB *excluido, int chavePai, ll *contador)
     resultado->total += excluido->total + 1;
 
     // Desloca os filhos existentes no nó resultado
-    (*contador)++;
+    
     for (int i = resultado->total; i >= excluido->total + 1; i--)
     {
         resultado->filhos[i] = resultado->filhos[i - excluido->total - 1];
-        (*contador)++;
+        
     }
 
     // Adiciona os filhos do nó excluído no início do nó resultado
-    (*contador)++;
+    
     for (int i = 0; i <= excluido->total; i++)
     {
-        (*contador)++;
+        
         if (excluido->filhos[i] != NULL)
         {
             resultado->filhos[i] = excluido->filhos[i];
             resultado->filhos[i]->pai = resultado;
-            (*contador)++;
+            
         }
     }
 }
@@ -407,23 +410,23 @@ void mergeEspelhado(NoB *resultado, NoB *excluido, int chavePai, ll *contador)
 
 int remocaoChaveB(ArvoreB *arvore, NoB *no, int chave, ll *contador)
 {
-    (*contador)++;
+    
     if (no == NULL || arvore == NULL)
     {
         return 0; // Chave não encontrada
     }
     int indice = pesquisaBinariaB(no, chave, contador);
-    (*contador)++;
+    
     if (indice < no->total && no->chaves[indice] == chave)
     {
         if (no->filhos[0] == NULL)
         {
             // Caso 1: Nó folha
-            (*contador)++;
+            
             for (int i = indice; i < no->total - 1; i++)
             {
                 no->chaves[i] = no->chaves[i + 1];
-                (*contador)++;
+                
             }
             no->total--;
             (*contador) += 2;
@@ -463,23 +466,23 @@ int remocaoChaveB(ArvoreB *arvore, NoB *no, int chave, ll *contador)
 
 void redistribuicaoB(ArvoreB *arvore, NoB *no, int indice, ll *contador)
 {
-    (*contador)++;
+    
     NoB *filhoAtual = no->filhos[indice];
     if (filhoAtual == NULL) return;
     if (filhoAtual->total < arvore->ordem)
     {
         NoB *irmao = irmaoMaior(no, indice, contador); // Escolhe o irmão correto
-        (*contador)++;
+        
         int chavePai;
         if (irmao == no->filhos[indice - 1])
             chavePai = no->chaves[indice - 1];
         else
             chavePai = no->chaves[indice];
 
-        (*contador)++;
+        
         if (irmao != NULL && irmao->total > arvore->ordem) // Redistribuição
         {
-            (*contador)++;
+            
             if (irmao == no->filhos[indice + 1]) // Redistribuição com irmão direito
             {
                 filhoAtual->chaves[filhoAtual->total] = chavePai;
@@ -487,15 +490,15 @@ void redistribuicaoB(ArvoreB *arvore, NoB *no, int indice, ll *contador)
                 no->chaves[indice] = irmao->chaves[0];
 
                 filhoAtual->filhos[filhoAtual->total] = irmao->filhos[0];
-                (*contador)++;
+                
                 if (irmao->filhos[0] != NULL)
                     irmao->filhos[0]->pai = filhoAtual;
 
                 // Remove a chave e o filho usados do irmão direito
-                (*contador)++;
+                
                 for (int i = 0; i < irmao->total - 1; i++)
                 {
-                    (*contador)++;
+                    
                     irmao->chaves[i] = irmao->chaves[i + 1];
                     irmao->filhos[i] = irmao->filhos[i + 1];
                 }
@@ -504,18 +507,18 @@ void redistribuicaoB(ArvoreB *arvore, NoB *no, int indice, ll *contador)
             }
             else // Redistribuição com irmão esquerdo
             {
-                (*contador)++;
+                
                 for (int i = filhoAtual->total; i > 0; i--)
                 {
                     filhoAtual->chaves[i] = filhoAtual->chaves[i - 1];
                     filhoAtual->filhos[i + 1] = filhoAtual->filhos[i];
-                    (*contador)++;
+                    
                 }
                 filhoAtual->filhos[1] = filhoAtual->filhos[0];
                 filhoAtual->chaves[0] = chavePai;
                 filhoAtual->filhos[0] = irmao->filhos[irmao->total];
 
-                (*contador)++;
+                
                 if (irmao->filhos[irmao->total] != NULL)
                     irmao->filhos[irmao->total]->pai = filhoAtual;
 
@@ -526,7 +529,7 @@ void redistribuicaoB(ArvoreB *arvore, NoB *no, int indice, ll *contador)
         }
         else // Mescla (merge)
         {
-            (*contador)++;
+            
             if (irmao == no->filhos[indice - 1]) // Mescla com irmão esquerdo
             {
                 mergeEspelhado(filhoAtual, irmao, chavePai, contador);
@@ -549,17 +552,17 @@ void redistribuicaoB(ArvoreB *arvore, NoB *no, int indice, ll *contador)
                 merge(filhoAtual, irmao, chavePai, contador);
 
                 // Remove chave do pai e ajusta filhos
-                (*contador)++;
+                
                 for (int i = indice; i < no->total - 1; i++)
                 {
                     no->chaves[i] = no->chaves[i + 1];
-                    (*contador)++;
+                    
                 }
-                (*contador)++;
+                
                 for (int i = indice + 1; i < no->total; i++)
                 {
                     no->filhos[i] = no->filhos[i + 1];
-                    (*contador)++;
+                    
                 }
 
                 no->total--;

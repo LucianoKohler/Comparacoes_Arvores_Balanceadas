@@ -104,9 +104,9 @@ int main(){
             testes[iterAtual].iterAddRB,
             tamConjunto,
             testes[iterAtual].iterRemovAVL,
-            testes[iterAtual].iterRemovB10,
-            testes[iterAtual].iterRemovB5,
             testes[iterAtual].iterRemovB1,
+            testes[iterAtual].iterRemovB5,
+            testes[iterAtual].iterRemovB10,
             testes[iterAtual].iterRemovRB);
         printf("|--------|----------|----------|----------|----------|----------|   |--------|----------|----------|----------|----------|----------|\n");
     }

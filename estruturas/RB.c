@@ -1,6 +1,8 @@
 #include "../header.h"
 
-// Função que cria uma nova árvore Rubro-Negra (Red-Black) vazia
+/* RB.c - versão estilo B (seu estilo) com contador limpo */
+
+/* Função que cria uma nova árvore Rubro-Negra (Red-Black) vazia */
 ArvoreRB *criarRB()
 {
     ArvoreRB *arvoreRB = malloc(sizeof(ArvoreRB));
@@ -9,42 +11,43 @@ ArvoreRB *criarRB()
     arvoreRB->nulo = malloc(sizeof(NoRB));
     arvoreRB->nulo->esquerda = arvoreRB->nulo;
     arvoreRB->nulo->direita = arvoreRB->nulo;
+    arvoreRB->nulo->pai = arvoreRB->nulo;
     arvoreRB->nulo->cor = Preto;
+    arvoreRB->nulo->valor = 0;
 
     return arvoreRB;
 }
 
-// Função que verifica se a árvore Rubro-Negra (arvoreRB) está vazia
+/* Função que verifica se a árvore Rubro-Negra (arvoreRB) está vazia */
 int vaziaRB(ArvoreRB *arvoreRB)
 {
     return arvoreRB->raiz == NULL || arvoreRB->raiz == arvoreRB->nulo;
 }
 
-// Função que cria um novo nó com valor (valor) e pai (pai)
+/* Função que cria um novo nó com valor (valor) e pai (pai) */
 NoRB *criarNoRB(ArvoreRB *arvoreRB, NoRB *pai, int valor)
 {
     NoRB *noRB = malloc(sizeof(NoRB));
-
     noRB->pai = pai;
     noRB->valor = valor;
     noRB->direita = arvoreRB->nulo;
     noRB->esquerda = arvoreRB->nulo;
-
+    noRB->cor = Vermelho;
     return noRB;
 }
 
-// Função que adiciona um novo nó com valor (valor) a partir de um nó (noRB)
+/* Função que adiciona um novo nó com valor (valor) a partir de um nó (noRB)
+   Observação: cada chamada recursiva conta como "visitou um nó" para o contador. */
 NoRB *adicionarNoRB(ArvoreRB *arvoreRB, NoRB *noRB, int valor, ll *contador)
 {
-    (*contador)++;
+    (*contador)++; /* visitei este nó na descida */
+
     if (valor > noRB->valor)
     {
-        (*contador)++;
         if (noRB->direita == arvoreRB->nulo)
         {
             noRB->direita = criarNoRB(arvoreRB, noRB, valor);
             noRB->direita->cor = Vermelho;
-
             return noRB->direita;
         }
         else
@@ -54,12 +57,10 @@ NoRB *adicionarNoRB(ArvoreRB *arvoreRB, NoRB *noRB, int valor, ll *contador)
     }
     else
     {
-        (*contador)++;
         if (noRB->esquerda == arvoreRB->nulo)
         {
             noRB->esquerda = criarNoRB(arvoreRB, noRB, valor);
             noRB->esquerda->cor = Vermelho;
-
             return noRB->esquerda;
         }
         else
@@ -69,66 +70,57 @@ NoRB *adicionarNoRB(ArvoreRB *arvoreRB, NoRB *noRB, int valor, ll *contador)
     }
 }
 
-// Função que adiciona um novo nó de valor (valor) na árvore Rubro-Negra (arvoreRB)
+/* Função que adiciona um novo nó de valor (valor) na árvore Rubro-Negra (arvoreRB) */
 NoRB *adicionarRB(ArvoreRB *arvoreRB, int valor, ll *contador)
 {
-    (*contador)++;
     if (vaziaRB(arvoreRB))
     {
         arvoreRB->raiz = criarNoRB(arvoreRB, arvoreRB->nulo, valor);
         arvoreRB->raiz->cor = Preto;
-
         return arvoreRB->raiz;
     }
     else
     {
         NoRB *noRB = adicionarNoRB(arvoreRB, arvoreRB->raiz, valor, contador);
         balancearAdRB(arvoreRB, noRB, contador);
-
         return noRB;
     }
 }
 
-// Função que localiza um nó de valor (valor) na árvore Rubro-Negra (arvoreRB)
+/* Função que localiza um nó de valor (valor) na árvore Rubro-Negra (arvoreRB)
+   contador++ por nó visitado na descida */
 NoRB *localizarRB(ArvoreRB *arvoreRB, int valor, ll *contador)
 {
-    (*contador)++;
     if (!vaziaRB(arvoreRB))
     {
         NoRB *noRB = arvoreRB->raiz;
-        (*contador)++;
         while (noRB != arvoreRB->nulo)
         {
-            (*contador)++;
+            (*contador)++; /* visitei este nó */
             if (noRB->valor == valor)
             {
                 return noRB;
             }
             else
             {
-                (*contador)++;
                 noRB = valor < noRB->valor ? noRB->esquerda : noRB->direita;
             }
-            (*contador)++;
         }
     }
 
     return NULL;
 }
 
-// Função que percorre In-Order a árvore Rubro-Negra
+/* Percursos (sem contagem) */
 void percorrerProfundidadeInOrderRB(ArvoreRB *arvoreRB, NoRB *noRB, void (*callback)(int))
 {
     if (noRB != arvoreRB->nulo)
     {
-
         percorrerProfundidadeInOrderRB(arvoreRB, noRB->esquerda, callback);
         callback(noRB->valor);
         percorrerProfundidadeInOrderRB(arvoreRB, noRB->direita, callback);
     }
 }
-
-// Função que percorre Pre-Order a árvore Rubro-Negra
 void percorrerProfundidadePreOrderRB(ArvoreRB *arvoreRB, NoRB *noRB, void (*callback)(int))
 {
     if (noRB != arvoreRB->nulo)
@@ -138,8 +130,6 @@ void percorrerProfundidadePreOrderRB(ArvoreRB *arvoreRB, NoRB *noRB, void (*call
         percorrerProfundidadePreOrderRB(arvoreRB, noRB->direita, callback);
     }
 }
-
-// Função que percorre Pós-Order a árvore Rubro-Negra
 void percorrerProfundidadePosOrderRB(ArvoreRB *arvoreRB, NoRB *noRB, void (*callback)(int))
 {
     if (noRB != arvoreRB->nulo)
@@ -150,99 +140,105 @@ void percorrerProfundidadePosOrderRB(ArvoreRB *arvoreRB, NoRB *noRB, void (*call
     }
 }
 
-// Função que balanceia a árvore Rubro-Negra (arvoreRB) após uma adição de um nó (noRB)
+/* balancearAdRB: fix-up após inserção
+   contador: 1 por iteração do while (passo do fix-up),
+             +1 por caso significativo (case handling),
+             rotações contam separadamente na função de rotação.
+*/
 void balancearAdRB(ArvoreRB *arvoreRB, NoRB *noRB, ll *contador)
 {
-    (*contador)++;
     while (noRB->pai->cor == Vermelho)
     {
-        (*contador)++;
+        (*contador)++; /* passo do fix-up (inserção) */
+
         if (noRB->pai == noRB->pai->pai->esquerda)
         {
             NoRB *tio = noRB->pai->pai->direita;
-            (*contador)++;
             if (tio->cor == Vermelho)
             {
-                tio->cor = Preto; // Caso 1
+                /* Caso 1: recoloração */
+                (*contador)++; /* evento: caso 1 recoloração */
+                tio->cor = Preto;
                 noRB->pai->cor = Preto;
-
-                noRB->pai->pai->cor = Vermelho; // Caso 1
-                noRB = noRB->pai->pai;          // Caso 1
+                noRB->pai->pai->cor = Vermelho;
+                noRB = noRB->pai->pai;
             }
             else
             {
-                (*contador)++;
                 if (noRB == noRB->pai->direita)
                 {
-                    noRB = noRB->pai;                               // Caso 2
-                    rotacionarEsquerdaRB(arvoreRB, noRB, contador); // Caso 2
+                    /* Caso 2: triângulo -> rota à esquerda no pai */
+                    (*contador)++; /* evento: caso 2 */
+                    noRB = noRB->pai;
+                    rotacionarEsquerdaRB(arvoreRB, noRB, contador); /* rotação conta dentro */
                 }
                 else
                 {
+                    /* Caso 3: linha -> recolor + rotação à direita no avô */
+                    (*contador)++; /* evento: caso 3 */
                     noRB->pai->cor = Preto;
-                    noRB->pai->pai->cor = Vermelho;                          // Caso 3
-                    rotacionarDireitaRB(arvoreRB, noRB->pai->pai, contador); // Caso 3
+                    noRB->pai->pai->cor = Vermelho;
+                    rotacionarDireitaRB(arvoreRB, noRB->pai->pai, contador); /* rotação conta dentro */
                 }
             }
         }
         else
         {
             NoRB *tio = noRB->pai->pai->esquerda;
-            (*contador)++;
             if (tio->cor == Vermelho)
             {
-                tio->cor = Preto; // Caso 1
+                /* Caso 1: recoloração */
+                (*contador)++; /* evento: caso 1 recoloração */
+                tio->cor = Preto;
                 noRB->pai->cor = Preto;
-
-                noRB->pai->pai->cor = Vermelho; // Caso 1
-                noRB = noRB->pai->pai;          // Caso 1
+                noRB->pai->pai->cor = Vermelho;
+                noRB = noRB->pai->pai;
             }
             else
             {
-                (*contador)++;
                 if (noRB == noRB->pai->esquerda)
                 {
-                    noRB = noRB->pai;                              // Caso 2
-                    rotacionarDireitaRB(arvoreRB, noRB, contador); // Caso 2
+                    /* Caso 2: triângulo -> rota à direita no pai */
+                    (*contador)++; /* evento: caso 2 */
+                    noRB = noRB->pai;
+                    rotacionarDireitaRB(arvoreRB, noRB, contador); /* rotação conta dentro */
                 }
                 else
                 {
+                    /* Caso 3: linha -> recolor + rotação à esquerda no avô */
+                    (*contador)++; /* evento: caso 3 */
                     noRB->pai->cor = Preto;
-                    noRB->pai->pai->cor = Vermelho;                           // Caso 3
-                    rotacionarEsquerdaRB(arvoreRB, noRB->pai->pai, contador); // Caso 3
+                    noRB->pai->pai->cor = Vermelho;
+                    rotacionarEsquerdaRB(arvoreRB, noRB->pai->pai, contador); /* rotação conta dentro */
                 }
             }
         }
-        (*contador)++;
     }
-    arvoreRB->raiz->cor = Preto; // Conserta possível quebra regra 2
+    arvoreRB->raiz->cor = Preto;
 }
 
-// Função que rotaciona o nó (noRB) para a esquerda
+/* rotação à esquerda: contar 1 evento (rotação) */
 void rotacionarEsquerdaRB(ArvoreRB *arvoreRB, NoRB *noRB, ll *contador)
 {
+    (*contador)++; /* contagem da rotação */
     NoRB *direita = noRB->direita;
     noRB->direita = direita->esquerda;
-    (*contador)++;
     if (direita->esquerda != arvoreRB->nulo)
     {
         direita->esquerda->pai = noRB;
     }
 
     direita->pai = noRB->pai;
-    (*contador)++;
     if (noRB->pai == arvoreRB->nulo)
     {
         arvoreRB->raiz = direita;
     }
     else if (noRB == noRB->pai->esquerda)
     {
-        (*contador)++;
         noRB->pai->esquerda = direita;
     }
     else
     {
-        (*contador)++;
         noRB->pai->direita = direita;
     }
 
@@ -250,31 +246,28 @@ void rotacionarEsquerdaRB(ArvoreRB *arvoreRB, NoRB *noRB, ll *contador)
     noRB->pai = direita;
 }
 
-// Função que rotaciona o nó (noRB) para a direita
+/* rotação à direita: contar 1 evento (rotação) */
 void rotacionarDireitaRB(ArvoreRB *arvoreRB, NoRB *noRB, ll *contador)
 {
+    (*contador)++; /* contagem da rotação */
     NoRB *esquerda = noRB->esquerda;
     noRB->esquerda = esquerda->direita;
-    (*contador)++;
     if (esquerda->direita != arvoreRB->nulo)
     {
         esquerda->direita->pai = noRB;
     }
 
     esquerda->pai = noRB->pai;
-    (*contador)++;
     if (noRB->pai == arvoreRB->nulo)
     {
         arvoreRB->raiz = esquerda;
     }
     else if (noRB == noRB->pai->esquerda)
     {
-        (*contador)++;
         noRB->pai->esquerda = esquerda;
     }
     else
     {
-        (*contador)++;
         noRB->pai->direita = esquerda;
     }
 
@@ -282,76 +275,73 @@ void rotacionarDireitaRB(ArvoreRB *arvoreRB, NoRB *noRB, ll *contador)
     noRB->pai = esquerda;
 }
 
-// Função que remove o nó (noRB)
+/* removerNoRB: libera memória do nó
+   (mantive o estilo simples; aqui não contamos nada) */
 void removerNoRB(NoRB *noRB)
 {
+    if (noRB == NULL) return;
     noRB->direita = NULL;
     noRB->esquerda = NULL;
     noRB->pai = NULL;
-    noRB = NULL;
     free(noRB);
 }
 
-// Função que retorna o nó sucessor In-Order do nó (noRB)
+/* sucessorDireitaRB: encontra menor na subárvore direita
+   NÃO incrementa contador aqui (descida já contada por localizar/remover). */
 NoRB *sucessorDireitaRB(ArvoreRB *arvoreRB, NoRB *noRB, ll *contador)
 {
-    NoRB *ret = noRB->direita;
     (*contador)++;
+    NoRB *ret = noRB->direita;
     while (ret->esquerda != arvoreRB->nulo)
     {
         ret = ret->esquerda;
-        (*contador)++;
     }
     return ret;
 }
 
-// Função que retorna o nó antecessor In-Order do nó (noRB)
+/* sucessorEsquerdaRB: antecessor (maior na subárvore esquerda) */
 NoRB *sucessorEsquerdaRB(ArvoreRB *arvoreRB, NoRB *noRB, ll *contador)
 {
     NoRB *ret = noRB->esquerda;
-    (*contador)++;
     while (ret->direita != arvoreRB->nulo)
     {
         ret = ret->direita;
-        (*contador)++;
     }
     return ret;
 }
 
-// Função auxiliar para a remoção de um nó na árvore Rubro-Negra
+/* transplanteRB: substitui u por v; conta 1 evento lógico (transplante) */
 void transplanteRB(ArvoreRB *arvoreRB, NoRB *u, NoRB *v, ll *contador)
 {
-    (*contador)++;
+    (*contador)++; /* evento: transplante */
     if (u->pai == arvoreRB->nulo)
     {
         arvoreRB->raiz = v;
     }
     else if (u == u->pai->esquerda)
     {
-        (*contador)++;
         u->pai->esquerda = v;
     }
     else
     {
-        (*contador)++;
         u->pai->direita = v;
     }
     v->pai = u->pai;
 }
 
-// Função que realiza a remoção de um nó de valor (valor) da árvore Rubro-Negra (arvoreRB)
+/* removerRB: remoção padrão CLRS com contagem limpa.
+   localizarRB já conta descida (se existir). transplante conta. fix-up conta por iteração/casos/rotações.
+*/
 NoRB *removerRB(ArvoreRB *arvoreRB, int valor, ll *contador)
 {
     NoRB *rem = localizarRB(arvoreRB, valor, contador);
-    (*contador)++;
-    if (arvoreRB == NULL )
-    {
+    if (rem == NULL)
         return NULL;
-    }
+
     NoRB *suc = rem;
     Cor corOriginal = suc->cor;
     NoRB *sub = arvoreRB->nulo;
-    (*contador)++;
+
     if (rem->esquerda == arvoreRB->nulo)
     {
         sub = rem->direita;
@@ -359,20 +349,20 @@ NoRB *removerRB(ArvoreRB *arvoreRB, int valor, ll *contador)
     }
     else if (rem->direita == arvoreRB->nulo)
     {
-        (*contador)++;
         sub = rem->esquerda;
         transplanteRB(arvoreRB, rem, rem->esquerda, contador);
     }
     else
     {
-        (*contador)++;
-        suc = sucessorDireitaRB(arvoreRB, rem, contador);
+        suc = sucessorDireitaRB(arvoreRB, rem, NULL);
         corOriginal = suc->cor;
         sub = suc->direita;
-        (*contador)++;
-        if( suc->pai == rem ) {
+        if (suc->pai == rem)
+        {
             sub->pai = suc;
-        } else {
+        }
+        else
+        {
             transplanteRB(arvoreRB, suc, suc->direita, contador);
             suc->direita = rem->direita;
             suc->direita->pai = suc;
@@ -382,49 +372,59 @@ NoRB *removerRB(ArvoreRB *arvoreRB, int valor, ll *contador)
         suc->esquerda->pai = suc;
         suc->cor = rem->cor;
     }
-    (*contador)++;
+
     if (corOriginal == Preto)
     {
         balancearRemRB(arvoreRB, sub, contador);
     }
-    return rem;
+
+    removerNoRB(rem);
+    return suc;
 }
 
-// Função que rebalanceia a árvore (arvoreRB) em uma remoção de nó
+/* balancearRemRB: fix-up após remoção; contagem limpa:
+   - contador++ por iteração do while (passo do fix-up)
+   - contador++ por caso que exige ação (ex.: recolor/rotações)
+   - rotações incrementam contador dentro das funções de rotação
+*/
 void balancearRemRB(ArvoreRB *arvoreRB, NoRB *noRB, ll *contador)
 {
-    (*contador)+= 2;
     while (noRB != arvoreRB->raiz && noRB->cor == Preto)
     {
-        (*contador)++;
+        (*contador)++; /* passo do fix-up (remoção) */
+
         if (noRB == noRB->pai->esquerda)
         {
             NoRB *irmao = noRB->pai->direita;
-            (*contador)++;
+
             if (irmao->cor == Vermelho)
-            { // Caso 1
+            {
+                (*contador)++; /* caso 1 */
                 irmao->cor = Preto;
                 noRB->pai->cor = Vermelho;
                 rotacionarEsquerdaRB(arvoreRB, noRB->pai, contador);
                 irmao = noRB->pai->direita;
             }
-            (*contador) += 2;
+
             if (irmao->esquerda->cor == Preto && irmao->direita->cor == Preto)
-            { // Caso 2
+            {
+                (*contador)++; /* caso 2 */
                 irmao->cor = Vermelho;
                 noRB = noRB->pai;
             }
-            else {
+            else
+            {
                 if (irmao->direita->cor == Preto)
-                { // Caso 3
-                    (*contador)++;
+                {
+                    (*contador)++; /* caso 3 */
                     irmao->esquerda->cor = Preto;
                     irmao->cor = Vermelho;
                     rotacionarDireitaRB(arvoreRB, irmao, contador);
                     irmao = noRB->pai->direita;
                 }
-
-                irmao->cor = noRB->pai->cor; // Caso 4
+                /* caso 4 */
+                (*contador)++; /* caso 4 */
+                irmao->cor = noRB->pai->cor;
                 noRB->pai->cor = Preto;
                 irmao->direita->cor = Preto;
                 rotacionarEsquerdaRB(arvoreRB, noRB->pai, contador);
@@ -434,38 +434,41 @@ void balancearRemRB(ArvoreRB *arvoreRB, NoRB *noRB, ll *contador)
         else
         {
             NoRB *irmao = noRB->pai->esquerda;
-            (*contador)++;
+
             if (irmao->cor == Vermelho)
-            { // Caso 1
+            {
+                (*contador)++; /* caso 1 */
                 irmao->cor = Preto;
                 noRB->pai->cor = Vermelho;
                 rotacionarDireitaRB(arvoreRB, noRB->pai, contador);
                 irmao = noRB->pai->esquerda;
             }
-            (*contador) += 2;
+
             if (irmao->esquerda->cor == Preto && irmao->direita->cor == Preto)
-            { // Caso 2
+            {
+                (*contador)++; /* caso 2 */
                 irmao->cor = Vermelho;
                 noRB = noRB->pai;
             }
-            else {
+            else
+            {
                 if (irmao->esquerda->cor == Preto)
-                { // Caso 3
-                    (*contador)++;
+                {
+                    (*contador)++; /* caso 3 */
                     irmao->direita->cor = Preto;
                     irmao->cor = Vermelho;
                     rotacionarEsquerdaRB(arvoreRB, irmao, contador);
                     irmao = noRB->pai->esquerda;
                 }
-
-                irmao->cor = noRB->pai->cor; // Caso 4
+                /* caso 4 */
+                (*contador)++; /* caso 4 */
+                irmao->cor = noRB->pai->cor;
                 noRB->pai->cor = Preto;
                 irmao->esquerda->cor = Preto;
                 rotacionarDireitaRB(arvoreRB, noRB->pai, contador);
                 noRB = arvoreRB->raiz;
             }
         }
-        (*contador) += 2;
     }
     noRB->cor = Preto;
 }
